@@ -3,623 +3,507 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vår Familie - Familieapp</title>
-    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
-    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <title>👨‍👩‍👧‍👦 Vår Familie - Familieapp</title>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&family=Fredoka:wght@600&display=swap" rel="stylesheet">
     <style>
+        /* RESET & BASE */
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Quicksand', sans-serif; background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%); min-height: 100vh; padding: 20px; }
+        body { 
+            font-family: 'Quicksand', sans-serif; 
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
         
-        /* Toast */
+        /* TOAST */
         .toast {
             position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
             background: #4CAF50; color: white; padding: 14px 28px;
             border-radius: 10px; box-shadow: 0 6px 20px rgba(0,0,0,0.2);
-            z-index: 9999; font-weight: 700; display: flex;
+            z-index: 10000; font-weight: 700; display: flex;
             align-items: center; gap: 10px; animation: fadeIn 0.3s ease;
             font-size: 16px; max-width: 90%; text-align: center;
         }
+        .toast.error { background: #f44336; }
+        .toast.warning { background: #FF9800; }
         
         @keyframes fadeIn {
             from { opacity: 0; transform: translateX(-50%) translateY(-30px); }
             to { opacity: 1; transform: translateX(-50%) translateY(0); }
         }
         
-        /* Mobil */
-        .mobile-button { padding: 18px !important; min-height: 50px; font-size: 17px !important; }
-        .mobile-input { font-size: 17px !important; padding: 16px !important; }
-        
+        /* MOBILE */
         @media (max-width: 768px) {
-            .container { padding: 10px !important; }
-            .tab-button { min-width: 120px; padding: 16px 12px !important; }
+            .btn { padding: 18px !important; min-height: 50px; }
+            input { font-size: 17px !important; padding: 16px !important; }
+        }
+        
+        /* LOADING */
+        .loader {
+            display: inline-block; width: 30px; height: 30px;
+            border: 4px solid #f3f3f3; border-top: 4px solid #4CAF50;
+            border-radius: 50%; animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        @keyframes spin { 
+            0% { transform: rotate(0deg); } 
+            100% { transform: rotate(360deg); } 
         }
     </style>
 </head>
 <body>
-    <div id="root"></div>
-    
-    <script type="text/babel">
-        const { useState, useEffect } = React;
-        const { createClient } = supabase;
-        
-        // AUTO-CONFIG - INGEN ENDRING NØDVENDIG
-        const SUPABASE_CONFIG = {
-            url: 'https://tifhelbmaqoojqtqhzso.supabase.co',
-            key: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRpZmhlbGJtYXFvb2pxdHFoenNvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzE2MjQwNDEsImV4cCI6MjA0NzIwMDA0MX0.Q6nqWlXgPJN4E8t5q7Z2kM3vL1wR9xY0zA4bC6dF8h'
+    <div id="app">
+        <!-- App loads here -->
+    </div>
+
+    <script>
+        // ==================== APP STATE ====================
+        let appState = {
+            currentUser: null,
+            activeTab: 'shopping',
+            shoppingItems: [],
+            isLoading: false
         };
         
-        // Feedback system - ENKLERE
-        const showFeedback = (message, type = 'success') => {
-            console.log(`[${type}] ${message}`);
+        // ==================== DEMO DATA ====================
+        const DEMO_USERS = [
+            { name: 'Emmie', emoji: '🌸', color: '#ff6b9d' },
+            { name: 'Thelma', emoji: '🦋', color: '#c471ed' },
+            { name: 'Elea', emoji: '🌟', color: '#f9ca24' },
+            { name: 'Katrine', emoji: '🌺', color: '#ff7979' },
+            { name: 'Kim Rune', emoji: '⚡', color: '#4a90e2' }
+        ];
+        
+        const DEMO_ITEMS = [
+            { id: 1, text: 'Melk', quantity: 2, added_by: 'Emmie', added_by_color: '#ff6b9d', timestamp: new Date(Date.now() - 3600000) },
+            { id: 2, text: 'Brød', quantity: 1, added_by: 'Kim Rune', added_by_color: '#4a90e2', timestamp: new Date(Date.now() - 7200000) },
+            { id: 3, text: 'Egg', quantity: 12, added_by: 'Thelma', added_by_color: '#c471ed', timestamp: new Date(Date.now() - 10800000) }
+        ];
+        
+        // ==================== UTILITIES ====================
+        function showToast(message, type = 'success') {
+            const existing = document.querySelector('.toast');
+            if (existing) existing.remove();
             
-            // Fjern gammel
-            const old = document.querySelector('.fam-toast');
-            if (old) old.remove();
-            
-            // Lag ny
             const toast = document.createElement('div');
-            toast.className = 'toast fam-toast';
-            toast.style.background = type === 'success' ? '#4CAF50' : type === 'error' ? '#f44336' : '#FF9800';
+            toast.className = `toast ${type}`;
             toast.innerHTML = `
                 ${type === 'success' ? '✅' : type === 'error' ? '❌' : '⚠️'}
                 <span>${message}</span>
             `;
-            
             document.body.appendChild(toast);
             
-            // Fjern etter 3s
             setTimeout(() => {
                 if (toast.parentNode) toast.remove();
             }, 3000);
-        };
+        }
         
-        // Main App
-        function FamilieApp() {
-            const [user, setUser] = useState(null);
-            const [items, setItems] = useState([]);
-            const [newItem, setNewItem] = useState('');
-            const [activeTab, setActiveTab] = useState('shopping');
-            const [isLoading, setIsLoading] = useState(false);
+        function formatDate(date) {
+            const now = new Date();
+            const diff = now - new Date(date);
+            const minutes = Math.floor(diff / 60000);
+            const hours = Math.floor(diff / 3600000);
             
-            const family = [
-                { name: 'Emmie', emoji: '🌸', color: '#ff6b9d' },
-                { name: 'Thelma', emoji: '🦋', color: '#c471ed' },
-                { name: 'Elea', emoji: '🌟', color: '#f9ca24' },
-                { name: 'Katrine', emoji: '🌺', color: '#ff7979' },
-                { name: 'Kim Rune', emoji: '⚡', color: '#4a90e2' }
-            ];
+            if (minutes < 1) return 'Akkurat nå';
+            if (minutes < 60) return `${minutes} min siden`;
+            if (hours < 24) return `${hours} timer siden`;
             
-            // INIT - Auto-kobler til Supabase
-            useEffect(() => {
-                const initApp = async () => {
-                    try {
-                        // Prøv å laste handleliste
-                        await loadData();
-                        showFeedback('App klar! ✅', 'success');
-                    } catch (error) {
-                        console.log('Start i offline-modus:', error);
-                        // Vis demo-data hvis Supabase feiler
-                        setItems([
-                            { id: 1, text: 'Melk', added_by: 'Emmie', added_by_color: '#ff6b9d', timestamp: new Date() },
-                            { id: 2, text: 'Brød', added_by: 'Kim Rune', added_by_color: '#4a90e2', timestamp: new Date() }
-                        ]);
-                        showFeedback('Bruker demo-data - Supabase kobler senere', 'warning');
-                    }
-                };
-                initApp();
-            }, []);
+            return new Date(date).toLocaleDateString('no-NO', { 
+                day: 'numeric', 
+                month: 'short',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+        
+        // ==================== CORE FUNCTIONS ====================
+        function addItem(text, quantity = 1) {
+            if (!text.trim() || !appState.currentUser) {
+                showToast('Skriv noe først!', 'warning');
+                return;
+            }
             
-            // Last data FIXET
-            const loadData = async () => {
-                setIsLoading(true);
-                try {
-                    // Prøv Supabase først
-                    const client = createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.key);
-                    const { data, error } = await client
-                        .from('shopping_items')
-                        .select('*')
-                        .order('timestamp', { ascending: false })
-                        .limit(50);
-                    
-                    if (error) throw error;
-                    if (data) {
-                        setItems(data);
-                        showFeedback(`Lastet ${data.length} varer ✅`);
-                    }
-                } catch (error) {
-                    console.log('Feil ved lasting:', error);
-                    showFeedback('Kunne ikke laste data - prøv igjen', 'error');
-                } finally {
-                    setIsLoading(false);
-                }
+            const newItem = {
+                id: Date.now(),
+                text: text.trim(),
+                quantity: quantity,
+                added_by: appState.currentUser.name,
+                added_by_color: appState.currentUser.color,
+                timestamp: new Date().toISOString()
             };
             
-            // Legg til vare - FIXET
-            const addItem = async () => {
-                if (!newItem.trim()) {
-                    showFeedback('Skriv noe først!', 'warning');
-                    return;
-                }
-                if (!user) {
-                    showFeedback('Velg bruker først!', 'warning');
-                    return;
-                }
-                
-                const tempId = Date.now(); // Midlertidig ID
-                const newItemObj = {
-                    id: tempId,
-                    text: newItem,
-                    quantity: 1,
-                    added_by: user.name,
-                    added_by_color: user.color,
-                    timestamp: new Date().toISOString()
-                };
-                
-                // Vis umiddelbart (optimistisk oppdatering)
-                setItems([newItemObj, ...items]);
-                setNewItem('');
-                showFeedback(`"${newItem}" lagt til! ✅`);
-                
-                // Prøv å lagre til Supabase i bakgrunnen
-                try {
-                    const client = createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.key);
-                    const { error } = await client
-                        .from('shopping_items')
-                        .insert([{
-                            text: newItem,
-                            quantity: 1,
-                            added_by: user.name,
-                            added_by_color: user.color
-                        }]);
-                    
-                    if (error) throw error;
-                    showFeedback('Vare lagret i skyen ☁️');
-                } catch (error) {
-                    console.log('Kunne ikke lagre til Supabase:', error);
-                    // Varen forblir i lokal liste uansett
-                }
-            };
+            appState.shoppingItems = [newItem, ...appState.shoppingItems];
+            showToast(`"${text}" lagt til! ✅`);
+            renderApp();
+        }
+        
+        function deleteItem(id) {
+            const item = appState.shoppingItems.find(item => item.id === id);
+            if (!item) return;
             
-            // Slett vare - MED ANGRE
-            const deleteItem = async (id) => {
-                const itemToDelete = items.find(item => item.id === id);
-                if (!itemToDelete) return;
-                
-                // Lagre for mulig angre
-                window.lastDeletedItem = { item: itemToDelete, id };
-                
-                // Fjern fra liste
-                setItems(items.filter(item => item.id !== id));
-                
-                // Vis undo-melding
-                showFeedback(`"${itemToDelete.text}" slettet - Klikk her for å angre`, 'undo');
-                
-                // Sett opp undo-funksjon
-                const toast = document.querySelector('.fam-toast');
+            // Store for undo
+            window.lastDeletedItem = { item: item, id: id };
+            
+            appState.shoppingItems = appState.shoppingItems.filter(item => item.id !== id);
+            showToast(`"${item.text}" slettet - Klikk for å angre`, 'warning');
+            
+            // Make toast clickable for undo
+            setTimeout(() => {
+                const toast = document.querySelector('.toast');
                 if (toast) {
+                    toast.style.cursor = 'pointer';
                     toast.onclick = () => {
                         if (window.lastDeletedItem) {
-                            setItems([window.lastDeletedItem.item, ...items]);
-                            showFeedback('Angret! Varen er tilbake ✅');
+                            appState.shoppingItems = [window.lastDeletedItem.item, ...appState.shoppingItems];
+                            showToast('Angret! Varen er tilbake ✅');
                             window.lastDeletedItem = null;
+                            renderApp();
                         }
                     };
                 }
-                
-                // Prøv å slett fra Supabase
-                try {
-                    const client = createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.key);
-                    await client.from('shopping_items').delete().eq('id', id);
-                } catch (error) {
-                    console.log('Kunne ikke synke sletting:', error);
-                }
-            };
+            }, 100);
             
-            // Statistikk for Emmie
-            const showEmmieStats = () => {
-                const stats = {
-                    tasks: 1,
-                    earnings: 50,
-                    waiting: true,
-                    message: "Emmie har 1 oppgave fullført, venter på godkjenning fra foreldre! 💰"
-                };
+            renderApp();
+        }
+        
+        function switchTab(tab) {
+            appState.activeTab = tab;
+            renderApp();
+        }
+        
+        function selectUser(userName) {
+            const user = DEMO_USERS.find(u => u.name === userName);
+            if (user) {
+                appState.currentUser = user;
+                localStorage.setItem('familieapp_user', userName);
+                showToast(`Velkommen, ${userName}! ✅`);
                 
-                alert(`📊 EMMIES STATISTIKK:\n\n✅ Oppgaver: ${stats.tasks}\n💰 Beløp: ${stats.earnings} kr\n⏳ Status: ${stats.waiting ? 'Venter godkjenning' : 'Godkjent'}\n\n${stats.message}`);
-                showFeedback('Statistikk vist i popup ✅');
+                // Load demo data for this user
+                appState.shoppingItems = [...DEMO_ITEMS];
+                renderApp();
+            }
+        }
+        
+        function logout() {
+            appState.currentUser = null;
+            localStorage.removeItem('familieapp_user');
+            renderApp();
+        }
+        
+        // ==================== EMMIE STATISTICS ====================
+        function getEmmieStats() {
+            return {
+                tasksCompleted: 1,
+                totalEarnings: 50,
+                pendingApproval: 1,
+                message: "Emmie har 1 oppgave fullført på 50 kr, venter på godkjenning!"
             };
+        }
+        
+        function showEmmieStatsPopup() {
+            const stats = getEmmieStats();
+            alert(`📊 EMMIES STATISTIKK\n\n` +
+                  `✅ Oppgaver fullført: ${stats.tasksCompleted}\n` +
+                  `💰 Beløp: ${stats.totalEarnings} kr\n` +
+                  `⏳ Venter godkjenning: ${stats.pendingApproval}\n\n` +
+                  `${stats.message}`);
+            showToast('Statistikk vist! ✅');
+        }
+        
+        // ==================== RENDERING ====================
+        function renderApp() {
+            const app = document.getElementById('app');
+            if (!app) return;
             
-            // Login skjerm
-            if (!user) {
-                return (
-                    <div style={{ 
-                        maxWidth: 500, margin: '40px auto', padding: 30,
-                        background: 'white', borderRadius: 25, boxShadow: '0 10px 40px rgba(0,0,0,0.1)',
-                        textAlign: 'center'
-                    }}>
-                        <h1 style={{ fontSize: '2.5rem', marginBottom: 10 }}>👨‍👩‍👧‍👦</h1>
-                        <h2 style={{ marginBottom: 30, color: '#333' }}>Velkommen til Familieappen!</h2>
-                        <p style={{ marginBottom: 30, color: '#666' }}>Hvem vil du logge inn som?</p>
-                        
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: 15 }}>
-                            {family.map(person => (
-                                <button
-                                    key={person.name}
-                                    onClick={() => setUser(person)}
-                                    className="mobile-button"
-                                    style={{
-                                        background: 'white',
-                                        border: `3px solid ${person.color}`,
-                                        borderRadius: 20,
-                                        color: person.color,
-                                        fontWeight: '700',
-                                        cursor: 'pointer',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                        gap: 15,
-                                        transition: 'all 0.2s'
-                                    }}
-                                    onMouseOver={e => e.currentTarget.style.background = person.color + '20'}
-                                    onMouseOut={e => e.currentTarget.style.background = 'white'}
-                                >
-                                    <span style={{ fontSize: '1.8rem' }}>{person.emoji}</span>
-                                    <span style={{ fontSize: '1.2rem' }}>{person.name}</span>
-                                </button>
-                            ))}
-                        </div>
-                    </div>
-                );
+            // Show login screen if no user
+            if (!appState.currentUser) {
+                app.innerHTML = renderLoginScreen();
+                return;
             }
             
-            // Hovedskjerm
-            return (
-                <div className="container" style={{ maxWidth: 800, margin: '0 auto' }}>
-                    {/* Header */}
-                    <div style={{
-                        background: `linear-gradient(135deg, ${user.color} 0%, ${user.color}80 100%)`,
-                        padding: 25,
-                        borderRadius: 25,
-                        marginBottom: 25,
-                        color: 'white',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'space-between'
-                    }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
-                            <div style={{ fontSize: '3rem' }}>{user.emoji}</div>
+            // Show main app
+            app.innerHTML = renderMainApp();
+        }
+        
+        function renderLoginScreen() {
+            return `
+                <div style="max-width: 500px; margin: 40px auto; padding: 30px; background: white; 
+                           border-radius: 25px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); text-align: center;">
+                    <h1 style="font-size: 2.5rem; margin-bottom: 10px;">👨‍👩‍👧‍👦</h1>
+                    <h2 style="margin-bottom: 30px; color: #333; font-family: 'Fredoka', sans-serif;">
+                        Velkommen til Familieappen!
+                    </h2>
+                    <p style="margin-bottom: 30px; color: #666;">Hvem vil du logge inn som?</p>
+                    
+                    <div style="display: flex; flex-direction: column; gap: 15px;">
+                        ${DEMO_USERS.map(user => `
+                            <button onclick="selectUser('${user.name}')" class="btn"
+                                style="background: white; border: 3px solid ${user.color}; border-radius: 20px;
+                                       color: ${user.color}; font-weight: 700; cursor: pointer; display: flex;
+                                       align-items: center; justify-content: center; gap: 15px; padding: 20px;
+                                       transition: all 0.2s; font-size: 1.2rem;"
+                                onmouseover="this.style.background='${user.color}20'"
+                                onmouseout="this.style.background='white'">
+                                <span style="font-size: 1.8rem;">${user.emoji}</span>
+                                <span>${user.name}</span>
+                            </button>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
+        
+        function renderMainApp() {
+            const user = appState.currentUser;
+            
+            return `
+                <div style="max-width: 800px; margin: 0 auto;">
+                    <!-- Header -->
+                    <div style="background: linear-gradient(135deg, ${user.color} 0%, ${user.color}80 100%);
+                                padding: 25px; border-radius: 25px; margin-bottom: 25px; color: white;
+                                display: flex; align-items: center; justify-content: space-between;">
+                        <div style="display: flex; align-items: center; gap: 20px;">
+                            <div style="font-size: 3rem;">${user.emoji}</div>
                             <div>
-                                <h1 style={{ fontSize: '1.8rem' }}>Hei, {user.name}!</h1>
-                                <p style={{ opacity: 0.9 }}>{items.length} varer i handlelisten</p>
+                                <h1 style="font-size: 1.8rem; font-family: 'Fredoka', sans-serif;">
+                                    Hei, ${user.name}!
+                                </h1>
+                                <p style="opacity: 0.9;">${appState.shoppingItems.length} varer i handlelisten</p>
                             </div>
                         </div>
                         
-                        <button
-                            onClick={() => setUser(null)}
-                            style={{
-                                padding: '12px 20px',
-                                background: 'rgba(255,255,255,0.2)',
-                                border: '2px solid white',
-                                borderRadius: 15,
-                                color: 'white',
-                                fontWeight: '700',
-                                cursor: 'pointer',
-                                fontSize: '16px'
-                            }}
-                        >
+                        <button onclick="logout()" class="btn"
+                            style="padding: 12px 20px; background: rgba(255,255,255,0.2); border: 2px solid white;
+                                   border-radius: 15px; color: white; font-weight: 700; cursor: pointer; font-size: 16px;">
                             Bytt bruker
                         </button>
                     </div>
                     
-                    {/* Tabs */}
-                    <div style={{ display: 'flex', gap: 10, marginBottom: 25, flexWrap: 'wrap' }}>
-                        {[
-                            { id: 'shopping', label: '🛒 Handleliste' },
-                            { id: 'calendar', label: '📅 Kalender' },
-                            { id: 'notes', label: '📝 Notater' },
-                            { id: 'maintenance', label: '🔧 Vedlikehold' },
-                            { id: 'allowance', label: '💰 Ukelønn' }
-                        ].map(tab => (
-                            <button
-                                key={tab.id}
-                                onClick={() => setActiveTab(tab.id)}
-                                className="tab-button"
-                                style={{
-                                    padding: '18px',
-                                    background: activeTab === tab.id ? user.color : 'white',
-                                    color: activeTab === tab.id ? 'white' : user.color,
-                                    border: `3px solid ${user.color}`,
-                                    borderRadius: 18,
-                                    fontWeight: '700',
-                                    cursor: 'pointer',
-                                    flex: 1,
-                                    minWidth: 150,
-                                    fontSize: '16px'
-                                }}
-                            >
-                                {tab.label}
+                    <!-- Tabs -->
+                    <div style="display: flex; gap: 10px; margin-bottom: 25px; flex-wrap: wrap;">
+                        ${['shopping', 'calendar', 'notes', 'maintenance', 'allowance'].map(tab => `
+                            <button onclick="switchTab('${tab}')" class="btn"
+                                style="padding: 18px; background: ${appState.activeTab === tab ? user.color : 'white'};
+                                       color: ${appState.activeTab === tab ? 'white' : user.color};
+                                       border: 3px solid ${user.color}; border-radius: 18px;
+                                       font-weight: 700; cursor: pointer; flex: 1; min-width: 150px; font-size: 16px;">
+                                ${getTabIcon(tab)} ${getTabName(tab)}
                             </button>
-                        ))}
+                        `).join('')}
                     </div>
                     
-                    {/* Innhold */}
-                    <div style={{
-                        background: 'white',
-                        padding: 30,
-                        borderRadius: 25,
-                        boxShadow: '0 8px 30px rgba(0,0,0,0.1)',
-                        minHeight: 400
-                    }}>
-                        {activeTab === 'shopping' && (
-                            <div>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: 15, marginBottom: 25 }}>
-                                    <h2 style={{ fontSize: '1.8rem', color: '#333' }}>🛒 Handleliste</h2>
-                                    {isLoading && <span style={{ color: user.color }}>⏳ Laster...</span>}
-                                </div>
-                                
-                                {/* Input */}
-                                <div style={{ display: 'flex', gap: 15, marginBottom: 30 }}>
-                                    <input
-                                        type="text"
-                                        placeholder="Hva skal vi handle? (trykk Enter)"
-                                        value={newItem}
-                                        onChange={(e) => setNewItem(e.target.value)}
-                                        onKeyPress={(e) => e.key === 'Enter' && addItem()}
-                                        className="mobile-input"
-                                        style={{
-                                            flex: 1,
-                                            border: `3px solid ${user.color}40`,
-                                            borderRadius: 18,
-                                            fontSize: '17px',
-                                            outline: 'none'
-                                        }}
-                                    />
-                                    <button
-                                        onClick={addItem}
-                                        className="mobile-button"
-                                        style={{
-                                            background: user.color,
-                                            color: 'white',
-                                            border: 'none',
-                                            borderRadius: 18,
-                                            fontWeight: '700',
-                                            cursor: 'pointer',
-                                            minWidth: 120
-                                        }}
-                                    >
-                                        Legg til
-                                    </button>
-                                </div>
-                                
-                                {/* Liste */}
-                                <div style={{ display: 'flex', flexDirection: 'column', gap: 15 }}>
-                                    {items.length === 0 ? (
-                                        <div style={{ textAlign: 'center', padding: 50, color: '#999' }}>
-                                            <div style={{ fontSize: '4rem', marginBottom: 20 }}>🛒</div>
-                                            <p style={{ fontSize: '1.2rem' }}>Handlelisten er tom!</p>
-                                            <p>Legg til den første varen over 👆</p>
-                                        </div>
-                                    ) : (
-                                        items.map(item => (
-                                            <div
-                                                key={item.id}
-                                                style={{
-                                                    padding: 20,
-                                                    background: '#f8f9fa',
-                                                    borderRadius: 18,
-                                                    display: 'flex',
-                                                    justifyContent: 'space-between',
-                                                    alignItems: 'center',
-                                                    borderLeft: `6px solid ${item.added_by_color || user.color}`,
-                                                    transition: 'transform 0.2s'
-                                                }}
-                                                onMouseOver={e => e.currentTarget.style.transform = 'translateY(-2px)'}
-                                                onMouseOut={e => e.currentTarget.style.transform = 'translateY(0)'}
-                                            >
-                                                <div style={{ flex: 1 }}>
-                                                    <div style={{ 
-                                                        fontSize: '1.3rem', 
-                                                        fontWeight: '700',
-                                                        color: '#333',
-                                                        marginBottom: 5
-                                                    }}>
-                                                        {item.text}
-                                                        {item.quantity > 1 && (
-                                                            <span style={{
-                                                                background: user.color + '30',
-                                                                color: user.color,
-                                                                padding: '4px 10px',
-                                                                borderRadius: 10,
-                                                                marginLeft: 10,
-                                                                fontSize: '0.9rem',
-                                                                fontWeight: '700'
-                                                            }}>
-                                                                {item.quantity}x
-                                                            </span>
-                                                        )}
-                                                    </div>
-                                                    <div style={{ fontSize: '0.9rem', color: '#666' }}>
-                                                        <span style={{ 
-                                                            color: item.added_by_color || user.color,
-                                                            fontWeight: '700'
-                                                        }}>
-                                                            {item.added_by || 'Ukjent'}
-                                                        </span>
-                                                        {' • '}
-                                                        {item.timestamp 
-                                                            ? new Date(item.timestamp).toLocaleDateString('no-NO', { 
-                                                                day: 'numeric', 
-                                                                month: 'short',
-                                                                hour: '2-digit',
-                                                                minute: '2-digit'
-                                                            })
-                                                            : 'Nylig'
-                                                        }
-                                                    </div>
-                                                </div>
-                                                <button
-                                                    onClick={() => deleteItem(item.id)}
-                                                    style={{
-                                                        padding: '10px 20px',
-                                                        background: '#ff6b6b',
-                                                        color: 'white',
-                                                        border: 'none',
-                                                        borderRadius: 12,
-                                                        cursor: 'pointer',
-                                                        fontWeight: '700',
-                                                        fontSize: '15px',
-                                                        transition: 'background 0.2s'
-                                                    }}
-                                                    onMouseOver={e => e.currentTarget.style.background = '#ff5252'}
-                                                    onMouseOut={e => e.currentTarget.style.background = '#ff6b6b'}
-                                                >
-                                                    Slett
-                                                </button>
-                                            </div>
-                                        ))
-                                    )}
-                                </div>
-                            </div>
-                        )}
-                        
-                        {activeTab === 'allowance' && (
-                            <div>
-                                <h2 style={{ fontSize: '1.8rem', marginBottom: 20 }}>💰 Ukelønn</h2>
-                                
-                                {user.name === 'Emmie' && (
-                                    <div style={{
-                                        background: `${user.color}15`,
-                                        padding: 25,
-                                        borderRadius: 20,
-                                        marginBottom: 30,
-                                        border: `3px solid ${user.color}`
-                                    }}>
-                                        <h3 style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 15 }}>
-                                            <span>📊</span>
-                                            <span>Emmies Statistikk</span>
-                                        </h3>
-                                        <div style={{ 
-                                            display: 'grid', 
-                                            gridTemplateColumns: '1fr 1fr',
-                                            gap: 15,
-                                            marginBottom: 20
-                                        }}>
-                                            <div style={{ textAlign: 'center', padding: 15, background: 'white', borderRadius: 15 }}>
-                                                <div style={{ fontSize: '0.9rem', color: '#666' }}>Oppgaver</div>
-                                                <div style={{ fontSize: '2.5rem', fontWeight: '700', color: user.color }}>1</div>
-                                            </div>
-                                            <div style={{ textAlign: 'center', padding: 15, background: 'white', borderRadius: 15 }}>
-                                                <div style={{ fontSize: '0.9rem', color: '#666' }}>Beløp</div>
-                                                <div style={{ fontSize: '2.5rem', fontWeight: '700', color: user.color }}>50 kr</div>
-                                            </div>
-                                        </div>
-                                        <button
-                                            onClick={showEmmieStats}
-                                            className="mobile-button"
-                                            style={{
-                                                background: user.color,
-                                                color: 'white',
-                                                border: 'none',
-                                                borderRadius: 15,
-                                                fontWeight: '700',
-                                                cursor: 'pointer',
-                                                width: '100%'
-                                            }}
-                                        >
-                                            📈 Vis detaljert statistikk
-                                        </button>
-                                    </div>
-                                )}
-                                
-                                <div style={{ background: '#f8f9fa', padding: 20, borderRadius: 15 }}>
-                                    <p style={{ color: '#666', marginBottom: 15 }}>
-                                        <strong>Ukelønnssystemet kommer snart!</strong>
-                                    </p>
-                                    <p style={{ color: '#666', fontSize: '0.95rem' }}>
-                                        Her kan barn ta oppgaver, tjene penger og se statistikk.
-                                        Foreldre kan opprette oppgaver og godkjenne utført arbeid.
-                                    </p>
-                                </div>
-                            </div>
-                        )}
-                        
-                        {(activeTab === 'calendar' || activeTab === 'notes' || activeTab === 'maintenance') && (
-                            <div style={{ textAlign: 'center', padding: 60 }}>
-                                <div style={{ fontSize: '4rem', marginBottom: 20 }}>
-                                    {activeTab === 'calendar' && '📅'}
-                                    {activeTab === 'notes' && '📝'}
-                                    {activeTab === 'maintenance' && '🔧'}
-                                </div>
-                                <h3 style={{ fontSize: '1.5rem', marginBottom: 15, color: '#333' }}>
-                                    Kommer snart!
-                                </h3>
-                                <p style={{ color: '#666' }}>
-                                    Denne funksjonen blir lagt til i neste oppdatering.
-                                </p>
-                                <button
-                                    onClick={() => showFeedback('Vi jobber med dette! ✅')}
-                                    style={{
-                                        marginTop: 25,
-                                        padding: '15px 25px',
-                                        background: user.color,
-                                        color: 'white',
-                                        border: 'none',
-                                        borderRadius: 15,
-                                        fontWeight: '700',
-                                        cursor: 'pointer'
-                                    }}
-                                >
-                                    Gi tilbakemelding
-                                </button>
-                            </div>
-                        )}
+                    <!-- Content -->
+                    <div style="background: white; padding: 30px; border-radius: 25px; 
+                                box-shadow: 0 8px 30px rgba(0,0,0,0.1); min-height: 400px;">
+                        ${renderTabContent()}
                     </div>
                     
-                    {/* Footer */}
-                    <div style={{ 
-                        textAlign: 'center', 
-                        marginTop: 40, 
-                        padding: 20,
-                        color: '#666',
-                        fontSize: '0.9rem'
-                    }}>
+                    <!-- Footer -->
+                    <div style="text-align: center; margin-top: 40px; padding: 20px; color: #666; font-size: 0.9rem;">
                         <p>👨‍👩‍👧‍👦 Familien: Emmie • Thelma • Elea • Katrine • Kim Rune</p>
-                        <p style={{ marginTop: 5, opacity: 0.7 }}>Alt deles • Alt lagres • Alt fungerer</p>
+                        <p style="margin-top: 5px; opacity: 0.7;">Demo versjon • Fungerer offline</p>
                     </div>
                 </div>
-            );
+            `;
         }
         
-        // Render
-        const root = ReactDOM.createRoot(document.getElementById('root'));
-        root.render(<FamilieApp />);
-        
-        // Globale testfunksjoner
-        window.testApp = () => {
-            showFeedback('App testet! ✅');
-            console.log('✅ App er oppe og går');
-            console.log('📊 Test statistikk: visEmmieStats()');
-            console.log('🛒 Test handleliste: Legg til noe i input-feltet');
-        };
-        
-        window.visEmmieStats = () => {
-            const stats = {
-                oppgaver: 1,
-                beløp: "50 kr",
-                status: "Venter på godkjenning",
-                neste: "Be foreldre trykke 'Godkjenn'"
+        function getTabIcon(tab) {
+            const icons = {
+                shopping: '🛒',
+                calendar: '📅',
+                notes: '📝',
+                maintenance: '🔧',
+                allowance: '💰'
             };
-            alert(`📊 EMMIES STATISTIKK\n\n✅ Oppgaver: ${stats.oppgaver}\n💰 Beløp: ${stats.beløp}\n⏳ Status: ${stats.status}\n💡 Tips: ${stats.neste}`);
+            return icons[tab] || '📋';
+        }
+        
+        function getTabName(tab) {
+            const names = {
+                shopping: 'Handleliste',
+                calendar: 'Kalender',
+                notes: 'Notater',
+                maintenance: 'Vedlikehold',
+                allowance: 'Ukelønn'
+            };
+            return names[tab] || tab;
+        }
+        
+        function renderTabContent() {
+            switch(appState.activeTab) {
+                case 'shopping':
+                    return renderShoppingList();
+                case 'calendar':
+                    return `<div style="text-align: center; padding: 60px;">
+                              <div style="font-size: 4rem; margin-bottom: 20px;">📅</div>
+                              <h3>Kalender kommer snart!</h3>
+                            </div>`;
+                case 'allowance':
+                    return renderAllowance();
+                default:
+                    return `<div style="text-align: center; padding: 60px;">
+                              <div style="font-size: 4rem; margin-bottom: 20px;">${getTabIcon(appState.activeTab)}</div>
+                              <h3>${getTabName(appState.activeTab)} kommer snart!</h3>
+                            </div>`;
+            }
+        }
+        
+        function renderShoppingList() {
+            return `
+                <div>
+                    <h2 style="font-size: 1.8rem; color: #333; margin-bottom: 25px;">🛒 Handleliste</h2>
+                    
+                    <!-- Input -->
+                    <div style="display: flex; gap: 15px; margin-bottom: 30px;">
+                        <input type="text" id="newItemInput" placeholder="Hva skal vi handle? (trykk Enter)"
+                            class="mobile-input" style="flex: 1; border: 3px solid ${appState.currentUser.color}40;
+                            border-radius: 18px; font-size: 17px; outline: none; padding: 16px;"
+                            onkeypress="if(event.key === 'Enter') addNewItem()">
+                        <button onclick="addNewItem()" class="btn"
+                            style="background: ${appState.currentUser.color}; color: white; border: none;
+                            border-radius: 18px; font-weight: 700; cursor: pointer; min-width: 120px; padding: 18px;">
+                            Legg til
+                        </button>
+                    </div>
+                    
+                    <!-- List -->
+                    <div style="display: flex; flex-direction: column; gap: 15px;">
+                        ${appState.shoppingItems.length === 0 ? `
+                            <div style="text-align: center; padding: 50px; color: #999;">
+                                <div style="font-size: 4rem; margin-bottom: 20px;">🛒</div>
+                                <p style="font-size: 1.2rem;">Handlelisten er tom!</p>
+                                <p>Legg til den første varen over 👆</p>
+                            </div>
+                        ` : appState.shoppingItems.map(item => `
+                            <div style="padding: 20px; background: #f8f9fa; border-radius: 18px;
+                                        display: flex; justify-content: space-between; align-items: center;
+                                        border-left: 6px solid ${item.added_by_color || appState.currentUser.color};">
+                                <div style="flex: 1;">
+                                    <div style="font-size: 1.3rem; font-weight: 700; color: #333; margin-bottom: 5px;">
+                                        ${item.text}
+                                        ${item.quantity > 1 ? `
+                                            <span style="background: ${appState.currentUser.color}30; 
+                                                   color: ${appState.currentUser.color}; padding: 4px 10px; 
+                                                   border-radius: 10px; margin-left: 10px; font-size: 0.9rem;">
+                                                ${item.quantity}x
+                                            </span>
+                                        ` : ''}
+                                    </div>
+                                    <div style="font-size: 0.9rem; color: #666;">
+                                        <span style="color: ${item.added_by_color || appState.currentUser.color}; font-weight: 700;">
+                                            ${item.added_by}
+                                        </span>
+                                        • ${formatDate(item.timestamp)}
+                                    </div>
+                                </div>
+                                <button onclick="deleteItem(${item.id})" class="btn"
+                                    style="padding: 10px 20px; background: #ff6b6b; color: white; border: none;
+                                           border-radius: 12px; cursor: pointer; font-weight: 700; font-size: 15px;">
+                                    Slett
+                                </button>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
+        
+        function renderAllowance() {
+            const isEmmie = appState.currentUser.name === 'Emmie';
+            
+            return `
+                <div>
+                    <h2 style="font-size: 1.8rem; margin-bottom: 20px;">💰 Ukelønn</h2>
+                    
+                    ${isEmmie ? `
+                        <div style="background: ${appState.currentUser.color}15; padding: 25px; border-radius: 20px;
+                                    margin-bottom: 30px; border: 3px solid ${appState.currentUser.color}">
+                            <h3 style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
+                                <span>📊</span>
+                                <span>Emmies Statistikk</span>
+                            </h3>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
+                                <div style="text-align: center; padding: 15px; background: white; border-radius: 15px;">
+                                    <div style="font-size: 0.9rem; color: #666;">Oppgaver</div>
+                                    <div style="font-size: 2.5rem; font-weight: 700; color: ${appState.currentUser.color}">1</div>
+                                </div>
+                                <div style="text-align: center; padding: 15px; background: white; border-radius: 15px;">
+                                    <div style="font-size: 0.9rem; color: #666;">Beløp</div>
+                                    <div style="font-size: 2.5rem; font-weight: 700; color: ${appState.currentUser.color}">50 kr</div>
+                                </div>
+                            </div>
+                            <button onclick="showEmmieStatsPopup()" class="btn"
+                                style="background: ${appState.currentUser.color}; color: white; border: none;
+                                       border-radius: 15px; font-weight: 700; cursor: pointer; width: 100%; padding: 18px;">
+                                📈 Vis detaljert statistikk
+                            </button>
+                        </div>
+                    ` : ''}
+                    
+                    <div style="background: #f8f9fa; padding: 20px; border-radius: 15px;">
+                        <p style="color: #666; margin-bottom: 15px;">
+                            <strong>Ukelønnssystemet kommer snart!</strong>
+                        </p>
+                        <p style="color: #666; font-size: 0.95rem;">
+                            Her kan barn ta oppgaver, tjene penger og se statistikk.
+                            Foreldre kan opprette oppgaver og godkjenne utført arbeid.
+                        </p>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // ==================== GLOBAL FUNCTIONS ====================
+        window.addNewItem = function() {
+            const input = document.getElementById('newItemInput');
+            if (!input) return;
+            
+            addItem(input.value.trim());
+            input.value = '';
+            input.focus();
         };
         
-        // Auto-start test
-        setTimeout(() => {
-            console.log('🚀 FamilieApp lastet!');
-            console.log('🔧 Test med: testApp()');
-            console.log('📊 Emmies statistikk: visEmmieStats()');
-        }, 1000);
+        // Make core functions available globally
+        window.addItem = addItem;
+        window.deleteItem = deleteItem;
+        window.switchTab = switchTab;
+        window.selectUser = selectUser;
+        window.logout = logout;
+        window.showEmmieStatsPopup = showEmmieStatsPopup;
+        window.showToast = showToast;
+        
+        // ==================== INITIALIZATION ====================
+        function initApp() {
+            console.log('🚀 Familieapp starter...');
+            
+            // Check for saved user
+            const savedUser = localStorage.getItem('familieapp_user');
+            if (savedUser) {
+                selectUser(savedUser);
+            } else {
+                renderApp();
+            }
+            
+            // Add test functions
+            window.testApp = function() {
+                showToast('App testet! ✅');
+                console.log('✅ App er oppe og går');
+                console.log('📊 Test Emmies statistikk: showEmmieStatsPopup()');
+                console.log('🛒 Test handleliste: Legg til noe i input-feltet');
+            };
+            
+            console.log('✅ App klar! Test med: testApp()');
+        }
+        
+        // Start the app when page loads
+        document.addEventListener('DOMContentLoaded', initApp);
+        
+        // Also start immediately (in case DOM already loaded)
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initApp);
+        } else {
+            initApp();
+        }
     </script>
 </body>
 </html>
