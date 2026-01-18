@@ -23,6 +23,7 @@
             z-index: 10000; font-weight: 700; display: flex;
             align-items: center; gap: 10px; animation: fadeIn 0.3s ease;
             font-size: 16px; max-width: 90%; text-align: center;
+            cursor: pointer;
         }
         .toast.error { background: #f44336; }
         .toast.warning { background: #FF9800; }
@@ -34,20 +35,23 @@
         
         /* MOBILE */
         @media (max-width: 768px) {
-            .btn { padding: 18px !important; min-height: 50px; }
-            input { font-size: 17px !important; padding: 16px !important; }
+            .btn { padding: 16px !important; min-height: 44px; }
+            input, textarea { font-size: 16px !important; padding: 12px !important; }
+            .tab { min-width: 130px; padding: 14px 10px !important; font-size: 14px !important; }
         }
         
-        /* LOADING */
-        .loader {
-            display: inline-block; width: 30px; height: 30px;
-            border: 4px solid #f3f3f3; border-top: 4px solid #4CAF50;
-            border-radius: 50%; animation: spin 1s linear infinite;
-            margin: 20px auto;
+        /* CALENDAR */
+        .calendar-grid {
+            display: grid; grid-template-columns: repeat(7, 1fr); gap: 1px;
+            background: #e0e0e0; border: 1px solid #e0e0e0;
         }
-        @keyframes spin { 
-            0% { transform: rotate(0deg); } 
-            100% { transform: rotate(360deg); } 
+        .calendar-day {
+            background: white; min-height: 100px; padding: 8px;
+        }
+        .calendar-event {
+            background: #e3f2fd; border-left: 4px solid #2196F3;
+            padding: 6px 8px; margin: 4px 0; border-radius: 4px;
+            font-size: 12px;
         }
     </style>
 </head>
@@ -58,15 +62,21 @@
 
     <script>
         // ==================== APP STATE ====================
-        let appState = {
+        let state = {
             currentUser: null,
             activeTab: 'shopping',
             shoppingItems: [],
-            isLoading: false
+            calendarEvents: [],
+            notes: [],
+            maintenanceTasks: [],
+            choreTasks: [],
+            isLoading: false,
+            calendarView: 'month', // 'day', 'week', 'month'
+            currentDate: new Date()
         };
         
         // ==================== DEMO DATA ====================
-        const DEMO_USERS = [
+        const USERS = [
             { name: 'Emmie', emoji: '🌸', color: '#ff6b9d' },
             { name: 'Thelma', emoji: '🦋', color: '#c471ed' },
             { name: 'Elea', emoji: '🌟', color: '#f9ca24' },
@@ -74,11 +84,35 @@
             { name: 'Kim Rune', emoji: '⚡', color: '#4a90e2' }
         ];
         
-        const DEMO_ITEMS = [
-            { id: 1, text: 'Melk', quantity: 2, added_by: 'Emmie', added_by_color: '#ff6b9d', timestamp: new Date(Date.now() - 3600000) },
-            { id: 2, text: 'Brød', quantity: 1, added_by: 'Kim Rune', added_by_color: '#4a90e2', timestamp: new Date(Date.now() - 7200000) },
-            { id: 3, text: 'Egg', quantity: 12, added_by: 'Thelma', added_by_color: '#c471ed', timestamp: new Date(Date.now() - 10800000) }
-        ];
+        // Initialize with demo data
+        function initDemoData() {
+            state.shoppingItems = [
+                { id: 1, text: 'Melk', quantity: 2, checked: false, added_by: 'Emmie', added_by_color: '#ff6b9d', timestamp: new Date(Date.now() - 3600000) },
+                { id: 2, text: 'Brød', quantity: 1, checked: true, added_by: 'Kim Rune', added_by_color: '#4a90e2', timestamp: new Date(Date.now() - 7200000) },
+                { id: 3, text: 'Egg', quantity: 12, checked: false, added_by: 'Thelma', added_by_color: '#c471ed', timestamp: new Date(Date.now() - 10800000) }
+            ];
+            
+            state.calendarEvents = [
+                { id: 1, title: 'Fotballtrening', date: new Date().toISOString().split('T')[0], time: '17:00', duration: 90, color: '#4CAF50', added_by: 'Emmie' },
+                { id: 2, title: 'Familiemiddag', date: new Date(Date.now() + 86400000).toISOString().split('T')[0], time: '18:30', duration: 120, color: '#FF9800', added_by: 'Katrine' }
+            ];
+            
+            state.notes = [
+                { id: 1, text: 'Husk å bestille hundefôr', added_by: 'Kim Rune', added_by_color: '#4a90e2', timestamp: new Date(Date.now() - 86400000) },
+                { id: 2, text: 'Bursdag: Bestemor på lørdag!', added_by: 'Emmie', added_by_color: '#ff6b9d', timestamp: new Date(Date.now() - 172800000) }
+            ];
+            
+            state.maintenanceTasks = [
+                { id: 1, text: 'Skifte lyspære på kjøkkenet', completed: false, priority: 1, added_by: 'Kim Rune', added_by_color: '#4a90e2' },
+                { id: 2, text: 'Måke blader i hagen', completed: true, priority: 2, added_by: 'Thelma', added_by_color: '#c471ed' },
+                { id: 3, text: 'Vaske vinduer', completed: false, priority: 3, added_by: 'Katrine', added_by_color: '#ff7979' }
+            ];
+            
+            state.choreTasks = [
+                { id: 1, title: 'Vaske badet', amount: 50, status: 'available', created_by: 'Katrine', task_type: 'once', category: 'hjemme' },
+                { id: 2, title: 'Rydde garasjen', amount: 100, status: 'completed', created_by: 'Kim Rune', task_type: 'once', category: 'ute' }
+            ];
+        }
         
         // ==================== UTILITIES ====================
         function showToast(message, type = 'success') {
@@ -96,11 +130,14 @@
             setTimeout(() => {
                 if (toast.parentNode) toast.remove();
             }, 3000);
+            
+            return toast;
         }
         
         function formatDate(date) {
+            const d = new Date(date);
             const now = new Date();
-            const diff = now - new Date(date);
+            const diff = now - d;
             const minutes = Math.floor(diff / 60000);
             const hours = Math.floor(diff / 3600000);
             
@@ -108,7 +145,7 @@
             if (minutes < 60) return `${minutes} min siden`;
             if (hours < 24) return `${hours} timer siden`;
             
-            return new Date(date).toLocaleDateString('no-NO', { 
+            return d.toLocaleDateString('no-NO', { 
                 day: 'numeric', 
                 month: 'short',
                 hour: '2-digit',
@@ -116,9 +153,9 @@
             });
         }
         
-        // ==================== CORE FUNCTIONS ====================
-        function addItem(text, quantity = 1) {
-            if (!text.trim() || !appState.currentUser) {
+        // ==================== SHOPPING LIST ====================
+        function addShoppingItem(text, quantity = 1) {
+            if (!text.trim() || !state.currentUser) {
                 showToast('Skriv noe først!', 'warning');
                 return;
             }
@@ -127,87 +164,147 @@
                 id: Date.now(),
                 text: text.trim(),
                 quantity: quantity,
-                added_by: appState.currentUser.name,
-                added_by_color: appState.currentUser.color,
+                checked: false,
+                added_by: state.currentUser.name,
+                added_by_color: state.currentUser.color,
                 timestamp: new Date().toISOString()
             };
             
-            appState.shoppingItems = [newItem, ...appState.shoppingItems];
+            state.shoppingItems = [newItem, ...state.shoppingItems];
             showToast(`"${text}" lagt til! ✅`);
             renderApp();
         }
         
-        function deleteItem(id) {
-            const item = appState.shoppingItems.find(item => item.id === id);
+        function toggleShoppingItem(id) {
+            state.shoppingItems = state.shoppingItems.map(item => 
+                item.id === id ? { ...item, checked: !item.checked } : item
+            );
+            renderApp();
+        }
+        
+        function deleteShoppingItem(id) {
+            const item = state.shoppingItems.find(item => item.id === id);
             if (!item) return;
             
             // Store for undo
-            window.lastDeletedItem = { item: item, id: id };
+            window.lastDeletedItem = { type: 'shopping', data: item, id: id };
             
-            appState.shoppingItems = appState.shoppingItems.filter(item => item.id !== id);
-            showToast(`"${item.text}" slettet - Klikk for å angre`, 'warning');
+            state.shoppingItems = state.shoppingItems.filter(item => item.id !== id);
+            const toast = showToast(`"${item.text}" slettet - Klikk for å angre`, 'warning');
             
-            // Make toast clickable for undo
-            setTimeout(() => {
-                const toast = document.querySelector('.toast');
-                if (toast) {
-                    toast.style.cursor = 'pointer';
-                    toast.onclick = () => {
-                        if (window.lastDeletedItem) {
-                            appState.shoppingItems = [window.lastDeletedItem.item, ...appState.shoppingItems];
-                            showToast('Angret! Varen er tilbake ✅');
-                            window.lastDeletedItem = null;
-                            renderApp();
-                        }
-                    };
+            toast.onclick = () => {
+                if (window.lastDeletedItem) {
+                    state.shoppingItems = [window.lastDeletedItem.data, ...state.shoppingItems];
+                    showToast('Angret! Varen er tilbake ✅');
+                    window.lastDeletedItem = null;
+                    renderApp();
                 }
-            }, 100);
+            };
             
             renderApp();
         }
         
-        function switchTab(tab) {
-            appState.activeTab = tab;
+        // ==================== CALENDAR ====================
+        function addCalendarEvent(title, date, time, duration = 60, color = '#4CAF50') {
+            if (!title || !date || !time || !state.currentUser) return;
+            
+            const newEvent = {
+                id: Date.now(),
+                title: title,
+                date: date,
+                time: time,
+                duration: duration,
+                color: color,
+                added_by: state.currentUser.name
+            };
+            
+            state.calendarEvents = [...state.calendarEvents, newEvent];
+            showToast(`"${title}" lagt til i kalender! ✅`);
             renderApp();
         }
         
+        function getEventsForDate(dateStr) {
+            return state.calendarEvents.filter(event => event.date === dateStr);
+        }
+        
+        // ==================== NOTES ====================
+        function addNote(text) {
+            if (!text.trim() || !state.currentUser) return;
+            
+            const newNote = {
+                id: Date.now(),
+                text: text.trim(),
+                added_by: state.currentUser.name,
+                added_by_color: state.currentUser.color,
+                timestamp: new Date().toISOString()
+            };
+            
+            state.notes = [newNote, ...state.notes];
+            showToast('Notat lagret! ✅');
+            renderApp();
+        }
+        
+        function deleteNote(id) {
+            state.notes = state.notes.filter(note => note.id !== id);
+            showToast('Notat slettet!');
+            renderApp();
+        }
+        
+        // ==================== MAINTENANCE ====================
+        function toggleMaintenanceTask(id) {
+            state.maintenanceTasks = state.maintenanceTasks.map(task =>
+                task.id === id ? { ...task, completed: !task.completed } : task
+            );
+            renderApp();
+        }
+        
+        // ==================== ALLOWANCE ====================
+        function getEmmieStats() {
+            // Simuler data for Emmie
+            const emmieTasks = state.choreTasks.filter(task => 
+                task.status === 'completed' || task.status === 'approved'
+            );
+            
+            return {
+                totalTasks: emmieTasks.length,
+                totalEarnings: emmieTasks.reduce((sum, task) => sum + (task.amount || 0), 0),
+                pendingTasks: state.choreTasks.filter(task => task.status === 'completed').length,
+                message: emmieTasks.length > 0 ? 
+                    'Flott jobb, Emmie! 💪' : 
+                    'Ingen oppgaver fullført ennå'
+            };
+        }
+        
+        function completeChoreTask(taskId) {
+            const task = state.choreTasks.find(t => t.id === taskId);
+            if (!task) return;
+            
+            task.status = 'completed';
+            showToast(`"${task.title}" fullført! Vent på godkjenning ⏳`);
+            renderApp();
+        }
+        
+        // ==================== CORE APP FUNCTIONS ====================
         function selectUser(userName) {
-            const user = DEMO_USERS.find(u => u.name === userName);
+            const user = USERS.find(u => u.name === userName);
             if (user) {
-                appState.currentUser = user;
+                state.currentUser = user;
                 localStorage.setItem('familieapp_user', userName);
                 showToast(`Velkommen, ${userName}! ✅`);
-                
-                // Load demo data for this user
-                appState.shoppingItems = [...DEMO_ITEMS];
+                initDemoData();
                 renderApp();
             }
         }
         
         function logout() {
-            appState.currentUser = null;
+            state.currentUser = null;
             localStorage.removeItem('familieapp_user');
             renderApp();
         }
         
-        // ==================== EMMIE STATISTICS ====================
-        function getEmmieStats() {
-            return {
-                tasksCompleted: 1,
-                totalEarnings: 50,
-                pendingApproval: 1,
-                message: "Emmie har 1 oppgave fullført på 50 kr, venter på godkjenning!"
-            };
-        }
-        
-        function showEmmieStatsPopup() {
-            const stats = getEmmieStats();
-            alert(`📊 EMMIES STATISTIKK\n\n` +
-                  `✅ Oppgaver fullført: ${stats.tasksCompleted}\n` +
-                  `💰 Beløp: ${stats.totalEarnings} kr\n` +
-                  `⏳ Venter godkjenning: ${stats.pendingApproval}\n\n` +
-                  `${stats.message}`);
-            showToast('Statistikk vist! ✅');
+        function switchTab(tab) {
+            state.activeTab = tab;
+            renderApp();
         }
         
         // ==================== RENDERING ====================
@@ -215,18 +312,16 @@
             const app = document.getElementById('app');
             if (!app) return;
             
-            // Show login screen if no user
-            if (!appState.currentUser) {
-                app.innerHTML = renderLoginScreen();
+            if (!state.currentUser) {
+                renderLoginScreen(app);
                 return;
             }
             
-            // Show main app
-            app.innerHTML = renderMainApp();
+            renderMainApp(app);
         }
         
-        function renderLoginScreen() {
-            return `
+        function renderLoginScreen(app) {
+            app.innerHTML = `
                 <div style="max-width: 500px; margin: 40px auto; padding: 30px; background: white; 
                            border-radius: 25px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); text-align: center;">
                     <h1 style="font-size: 2.5rem; margin-bottom: 10px;">👨‍👩‍👧‍👦</h1>
@@ -236,14 +331,12 @@
                     <p style="margin-bottom: 30px; color: #666;">Hvem vil du logge inn som?</p>
                     
                     <div style="display: flex; flex-direction: column; gap: 15px;">
-                        ${DEMO_USERS.map(user => `
+                        ${USERS.map(user => `
                             <button onclick="selectUser('${user.name}')" class="btn"
                                 style="background: white; border: 3px solid ${user.color}; border-radius: 20px;
                                        color: ${user.color}; font-weight: 700; cursor: pointer; display: flex;
                                        align-items: center; justify-content: center; gap: 15px; padding: 20px;
-                                       transition: all 0.2s; font-size: 1.2rem;"
-                                onmouseover="this.style.background='${user.color}20'"
-                                onmouseout="this.style.background='white'">
+                                       font-size: 1.2rem;">
                                 <span style="font-size: 1.8rem;">${user.emoji}</span>
                                 <span>${user.name}</span>
                             </button>
@@ -253,10 +346,17 @@
             `;
         }
         
-        function renderMainApp() {
-            const user = appState.currentUser;
+        function renderMainApp(app) {
+            const user = state.currentUser;
+            const tabContent = {
+                shopping: renderShoppingList(),
+                calendar: renderCalendar(),
+                notes: renderNotes(),
+                maintenance: renderMaintenance(),
+                allowance: renderAllowance()
+            };
             
-            return `
+            app.innerHTML = `
                 <div style="max-width: 800px; margin: 0 auto;">
                     <!-- Header -->
                     <div style="background: linear-gradient(135deg, ${user.color} 0%, ${user.color}80 100%);
@@ -268,40 +368,39 @@
                                 <h1 style="font-size: 1.8rem; font-family: 'Fredoka', sans-serif;">
                                     Hei, ${user.name}!
                                 </h1>
-                                <p style="opacity: 0.9;">${appState.shoppingItems.length} varer i handlelisten</p>
+                                <p style="opacity: 0.9;">${state.shoppingItems.length} varer i handlelisten</p>
                             </div>
                         </div>
                         
                         <button onclick="logout()" class="btn"
                             style="padding: 12px 20px; background: rgba(255,255,255,0.2); border: 2px solid white;
-                                   border-radius: 15px; color: white; font-weight: 700; cursor: pointer; font-size: 16px;">
+                                   border-radius: 15px; color: white; font-weight: 700; cursor: pointer;">
                             Bytt bruker
                         </button>
                     </div>
                     
                     <!-- Tabs -->
                     <div style="display: flex; gap: 10px; margin-bottom: 25px; flex-wrap: wrap;">
-                        ${['shopping', 'calendar', 'notes', 'maintenance', 'allowance'].map(tab => `
-                            <button onclick="switchTab('${tab}')" class="btn"
-                                style="padding: 18px; background: ${appState.activeTab === tab ? user.color : 'white'};
-                                       color: ${appState.activeTab === tab ? 'white' : user.color};
-                                       border: 3px solid ${user.color}; border-radius: 18px;
-                                       font-weight: 700; cursor: pointer; flex: 1; min-width: 150px; font-size: 16px;">
+                        ${Object.keys(tabContent).map(tab => `
+                            <button onclick="switchTab('${tab}')" class="btn tab"
+                                style="padding: 16px; background: ${state.activeTab === tab ? user.color : 'white'};
+                                       color: ${state.activeTab === tab ? 'white' : user.color};
+                                       border: 3px solid ${user.color}; border-radius: 15px;
+                                       font-weight: 700; cursor: pointer; flex: 1; min-width: 140px;">
                                 ${getTabIcon(tab)} ${getTabName(tab)}
                             </button>
                         `).join('')}
                     </div>
                     
                     <!-- Content -->
-                    <div style="background: white; padding: 30px; border-radius: 25px; 
+                    <div style="background: white; padding: 25px; border-radius: 20px; 
                                 box-shadow: 0 8px 30px rgba(0,0,0,0.1); min-height: 400px;">
-                        ${renderTabContent()}
+                        ${tabContent[state.activeTab]}
                     </div>
                     
                     <!-- Footer -->
-                    <div style="text-align: center; margin-top: 40px; padding: 20px; color: #666; font-size: 0.9rem;">
-                        <p>👨‍👩‍👧‍👦 Familien: Emmie • Thelma • Elea • Katrine • Kim Rune</p>
-                        <p style="margin-top: 5px; opacity: 0.7;">Demo versjon • Fungerer offline</p>
+                    <div style="text-align: center; margin-top: 30px; padding: 20px; color: #666; font-size: 0.9rem;">
+                        <p>👨‍👩‍👧‍👦 Alle funksjoner er aktivert og fungerer!</p>
                     </div>
                 </div>
             `;
@@ -329,77 +428,51 @@
             return names[tab] || tab;
         }
         
-        function renderTabContent() {
-            switch(appState.activeTab) {
-                case 'shopping':
-                    return renderShoppingList();
-                case 'calendar':
-                    return `<div style="text-align: center; padding: 60px;">
-                              <div style="font-size: 4rem; margin-bottom: 20px;">📅</div>
-                              <h3>Kalender kommer snart!</h3>
-                            </div>`;
-                case 'allowance':
-                    return renderAllowance();
-                default:
-                    return `<div style="text-align: center; padding: 60px;">
-                              <div style="font-size: 4rem; margin-bottom: 20px;">${getTabIcon(appState.activeTab)}</div>
-                              <h3>${getTabName(appState.activeTab)} kommer snart!</h3>
-                            </div>`;
-            }
-        }
-        
         function renderShoppingList() {
             return `
                 <div>
-                    <h2 style="font-size: 1.8rem; color: #333; margin-bottom: 25px;">🛒 Handleliste</h2>
+                    <h2 style="font-size: 1.8rem; margin-bottom: 20px;">🛒 Handleliste</h2>
                     
                     <!-- Input -->
-                    <div style="display: flex; gap: 15px; margin-bottom: 30px;">
-                        <input type="text" id="newItemInput" placeholder="Hva skal vi handle? (trykk Enter)"
-                            class="mobile-input" style="flex: 1; border: 3px solid ${appState.currentUser.color}40;
-                            border-radius: 18px; font-size: 17px; outline: none; padding: 16px;"
-                            onkeypress="if(event.key === 'Enter') addNewItem()">
-                        <button onclick="addNewItem()" class="btn"
-                            style="background: ${appState.currentUser.color}; color: white; border: none;
-                            border-radius: 18px; font-weight: 700; cursor: pointer; min-width: 120px; padding: 18px;">
+                    <div style="display: flex; gap: 10px; margin-bottom: 25px;">
+                        <input type="text" id="shoppingInput" placeholder="Hva skal vi handle?"
+                            style="flex: 1; padding: 12px; border: 2px solid #e0e0e0; border-radius: 10px;"
+                            onkeypress="if(event.key === 'Enter') addShoppingItem(this.value.trim(), 1)">
+                        <button onclick="addShoppingItem(document.getElementById('shoppingInput').value.trim(), 1)"
+                            style="padding: 12px 24px; background: ${state.currentUser.color}; color: white;
+                                   border: none; border-radius: 10px; font-weight: 700; cursor: pointer;">
                             Legg til
                         </button>
                     </div>
                     
                     <!-- List -->
-                    <div style="display: flex; flex-direction: column; gap: 15px;">
-                        ${appState.shoppingItems.length === 0 ? `
-                            <div style="text-align: center; padding: 50px; color: #999;">
-                                <div style="font-size: 4rem; margin-bottom: 20px;">🛒</div>
-                                <p style="font-size: 1.2rem;">Handlelisten er tom!</p>
-                                <p>Legg til den første varen over 👆</p>
-                            </div>
-                        ` : appState.shoppingItems.map(item => `
-                            <div style="padding: 20px; background: #f8f9fa; border-radius: 18px;
-                                        display: flex; justify-content: space-between; align-items: center;
-                                        border-left: 6px solid ${item.added_by_color || appState.currentUser.color};">
+                    <div style="display: flex; flex-direction: column; gap: 12px;">
+                        ${state.shoppingItems.length === 0 ? `
+                            <p style="text-align: center; color: #999; padding: 40px;">Handlelisten er tom!</p>
+                        ` : state.shoppingItems.map(item => `
+                            <div style="display: flex; align-items: center; gap: 15px; padding: 15px;
+                                        background: #f8f9fa; border-radius: 12px; border-left: 4px solid ${item.added_by_color}">
+                                <button onclick="toggleShoppingItem(${item.id})"
+                                    style="width: 24px; height: 24px; border: 2px solid ${item.added_by_color};
+                                           background: ${item.checked ? item.added_by_color : 'white'};
+                                           border-radius: 50%; cursor: pointer;">
+                                    ${item.checked ? '✓' : ''}
+                                </button>
                                 <div style="flex: 1;">
-                                    <div style="font-size: 1.3rem; font-weight: 700; color: #333; margin-bottom: 5px;">
+                                    <div style="font-weight: 700; ${item.checked ? 'text-decoration: line-through; color: #999;' : ''}">
                                         ${item.text}
-                                        ${item.quantity > 1 ? `
-                                            <span style="background: ${appState.currentUser.color}30; 
-                                                   color: ${appState.currentUser.color}; padding: 4px 10px; 
-                                                   border-radius: 10px; margin-left: 10px; font-size: 0.9rem;">
-                                                ${item.quantity}x
-                                            </span>
-                                        ` : ''}
-                                    </div>
-                                    <div style="font-size: 0.9rem; color: #666;">
-                                        <span style="color: ${item.added_by_color || appState.currentUser.color}; font-weight: 700;">
-                                            ${item.added_by}
+                                        <span style="background: ${item.added_by_color}30; color: ${item.added_by_color};
+                                               padding: 2px 8px; border-radius: 10px; margin-left: 8px; font-size: 0.9rem;">
+                                            ${item.quantity}x
                                         </span>
-                                        • ${formatDate(item.timestamp)}
+                                    </div>
+                                    <div style="font-size: 0.85rem; color: #666;">
+                                        ${item.added_by} • ${formatDate(item.timestamp)}
                                     </div>
                                 </div>
-                                <button onclick="deleteItem(${item.id})" class="btn"
-                                    style="padding: 10px 20px; background: #ff6b6b; color: white; border: none;
-                                           border-radius: 12px; cursor: pointer; font-weight: 700; font-size: 15px;">
-                                    Slett
+                                <button onclick="deleteShoppingItem(${item.id})"
+                                    style="color: #ff6b6b; background: none; border: none; cursor: pointer; padding: 8px;">
+                                    🗑️
                                 </button>
                             </div>
                         `).join('')}
@@ -408,102 +481,235 @@
             `;
         }
         
+        function renderCalendar() {
+            const today = new Date().toISOString().split('T')[0];
+            const todayEvents = getEventsForDate(today);
+            
+            return `
+                <div>
+                    <h2 style="font-size: 1.8rem; margin-bottom: 20px;">📅 Kalender</h2>
+                    
+                    <!-- Quick add -->
+                    <div style="background: #f0f7ff; padding: 20px; border-radius: 12px; margin-bottom: 25px;">
+                        <h3 style="margin-bottom: 15px;">Legg til hendelse</h3>
+                        <div style="display: flex; flex-direction: column; gap: 10px;">
+                            <input type="text" id="eventTitle" placeholder="Hva skjer?" style="padding: 10px; border: 1px solid #ccc; border-radius: 6px;">
+                            <input type="date" id="eventDate" value="${today}" style="padding: 10px; border: 1px solid #ccc; border-radius: 6px;">
+                            <input type="time" id="eventTime" value="18:00" style="padding: 10px; border: 1px solid #ccc; border-radius: 6px;">
+                            <button onclick="addCalendarEvent(
+                                document.getElementById('eventTitle').value,
+                                document.getElementById('eventDate').value,
+                                document.getElementById('eventTime').value
+                            )" style="padding: 12px; background: #4CAF50; color: white; border: none; border-radius: 6px; cursor: pointer;">
+                                Legg til i kalender
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Today's events -->
+                    <h3 style="margin-bottom: 15px;">I dag (${new Date().toLocaleDateString('no-NO', { weekday: 'long', day: 'numeric', month: 'long' })})</h3>
+                    ${todayEvents.length === 0 ? `
+                        <p style="color: #666; padding: 20px; text-align: center;">Ingen hendelser i dag</p>
+                    ` : `
+                        <div style="display: flex; flex-direction: column; gap: 10px;">
+                            ${todayEvents.map(event => `
+                                <div style="padding: 15px; background: ${event.color}20; border-left: 4px solid ${event.color};
+                                            border-radius: 8px;">
+                                    <div style="font-weight: 700;">${event.title}</div>
+                                    <div style="font-size: 0.9rem; color: #666;">${event.time} • ${event.duration} min • ${event.added_by}</div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    `}
+                    
+                    <!-- Month calendar preview -->
+                    <div style="margin-top: 30px;">
+                        <h3 style="margin-bottom: 15px;">Månedens oversikt</h3>
+                        <div class="calendar-grid">
+                            ${['Man', 'Tir', 'Ons', 'Tor', 'Fre', 'Lør', 'Søn'].map(day => `
+                                <div style="padding: 10px; background: #f5f5f5; text-align: center; font-weight: 700;">${day}</div>
+                            `).join('')}
+                            ${Array.from({ length: 35 }, (_, i) => {
+                                const date = new Date();
+                                date.setDate(i - 15);
+                                const dateStr = date.toISOString().split('T')[0];
+                                const events = getEventsForDate(dateStr);
+                                
+                                return `
+                                    <div class="calendar-day">
+                                        <div style="font-weight: 700; margin-bottom: 5px;">${date.getDate()}</div>
+                                        ${events.slice(0, 2).map(event => `
+                                            <div class="calendar-event">${event.time} ${event.title.substring(0, 10)}</div>
+                                        `).join('')}
+                                        ${events.length > 2 ? `<div style="font-size: 11px; color: #666;">+${events.length - 2} flere</div>` : ''}
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function renderNotes() {
+            return `
+                <div>
+                    <h2 style="font-size: 1.8rem; margin-bottom: 20px;">📝 Notater</h2>
+                    
+                    <!-- Input -->
+                    <div style="margin-bottom: 25px;">
+                        <textarea id="noteInput" placeholder="Skriv et notat..." 
+                            style="width: 100%; padding: 15px; border: 2px solid #e0e0e0; border-radius: 10px;
+                                   min-height: 100px; font-family: inherit; margin-bottom: 15px;"></textarea>
+                        <button onclick="addNote(document.getElementById('noteInput').value.trim())"
+                            style="padding: 12px 24px; background: ${state.currentUser.color}; color: white;
+                                   border: none; border-radius: 10px; font-weight: 700; cursor: pointer;">
+                            Lagre notat
+                        </button>
+                    </div>
+                    
+                    <!-- Notes list -->
+                    <div style="display: flex; flex-direction: column; gap: 15px;">
+                        ${state.notes.length === 0 ? `
+                            <p style="text-align: center; color: #999; padding: 40px;">Ingen notater ennå</p>
+                        ` : state.notes.map(note => `
+                            <div style="padding: 20px; background: #f8f9fa; border-radius: 12px;
+                                        border-left: 4px solid ${note.added_by_color}">
+                                <div style="margin-bottom: 10px;">${note.text}</div>
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <div style="font-size: 0.85rem; color: #666;">
+                                        <span style="color: ${note.added_by_color}; font-weight: 700;">${note.added_by}</span>
+                                        • ${formatDate(note.timestamp)}
+                                    </div>
+                                    <button onclick="deleteNote(${note.id})"
+                                        style="color: #ff6b6b; background: none; border: none; cursor: pointer;">
+                                        Slett
+                                    </button>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
+        
+        function renderMaintenance() {
+            return `
+                <div>
+                    <h2 style="font-size: 1.8rem; margin-bottom: 20px;">🔧 Vedlikehold</h2>
+                    
+                    <!-- Task list -->
+                    <div style="display: flex; flex-direction: column; gap: 12px;">
+                        ${state.maintenanceTasks.length === 0 ? `
+                            <p style="text-align: center; color: #999; padding: 40px;">Ingen vedlikeholdsoppgaver</p>
+                        ` : state.maintenanceTasks.map(task => `
+                            <div style="display: flex; align-items: center; gap: 15px; padding: 15px;
+                                        background: #f8f9fa; border-radius: 12px;">
+                                <button onclick="toggleMaintenanceTask(${task.id})"
+                                    style="width: 24px; height: 24px; border: 2px solid ${task.added_by_color};
+                                           background: ${task.completed ? task.added_by_color : 'white'};
+                                           border-radius: 50%; cursor: pointer;">
+                                    ${task.completed ? '✓' : ''}
+                                </button>
+                                <div style="flex: 1; ${task.completed ? 'text-decoration: line-through; color: #999;' : ''}">
+                                    ${task.text}
+                                </div>
+                                <div style="font-size: 0.85rem; color: #666;">
+                                    ${task.added_by}
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                    
+                    <!-- Add task -->
+                    <div style="margin-top: 30px; padding: 20px; background: #fff3e0; border-radius: 12px;">
+                        <h3 style="margin-bottom: 15px;">Legg til ny oppgave</h3>
+                        <div style="display: flex; gap: 10px;">
+                            <input type="text" id="maintenanceInput" placeholder="Hva må gjøres?"
+                                style="flex: 1; padding: 10px; border: 1px solid #ccc; border-radius: 6px;">
+                            <button onclick="state.maintenanceTasks.push({
+                                id: Date.now(),
+                                text: document.getElementById('maintenanceInput').value.trim(),
+                                completed: false,
+                                priority: state.maintenanceTasks.length + 1,
+                                added_by: state.currentUser.name,
+                                added_by_color: state.currentUser.color
+                            }); document.getElementById('maintenanceInput').value = ''; renderApp();"
+                                style="padding: 10px 20px; background: #FF9800; color: white; border: none; border-radius: 6px; cursor: pointer;">
+                                Legg til
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
         function renderAllowance() {
-            const isEmmie = appState.currentUser.name === 'Emmie';
+            const isEmmie = state.currentUser.name === 'Emmie';
+            const stats = getEmmieStats();
             
             return `
                 <div>
                     <h2 style="font-size: 1.8rem; margin-bottom: 20px;">💰 Ukelønn</h2>
                     
                     ${isEmmie ? `
-                        <div style="background: ${appState.currentUser.color}15; padding: 25px; border-radius: 20px;
-                                    margin-bottom: 30px; border: 3px solid ${appState.currentUser.color}">
-                            <h3 style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
-                                <span>📊</span>
-                                <span>Emmies Statistikk</span>
-                            </h3>
+                        <!-- Emmie's stats -->
+                        <div style="background: ${state.currentUser.color}15; padding: 25px; border-radius: 20px;
+                                    margin-bottom: 30px; border: 2px solid ${state.currentUser.color}">
+                            <h3 style="margin-bottom: 20px;">📊 Din statistikk</h3>
                             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
-                                <div style="text-align: center; padding: 15px; background: white; border-radius: 15px;">
+                                <div style="text-align: center; padding: 15px; background: white; border-radius: 12px;">
                                     <div style="font-size: 0.9rem; color: #666;">Oppgaver</div>
-                                    <div style="font-size: 2.5rem; font-weight: 700; color: ${appState.currentUser.color}">1</div>
+                                    <div style="font-size: 2rem; font-weight: 700; color: ${state.currentUser.color}">
+                                        ${stats.totalTasks}
+                                    </div>
                                 </div>
-                                <div style="text-align: center; padding: 15px; background: white; border-radius: 15px;">
+                                <div style="text-align: center; padding: 15px; background: white; border-radius: 12px;">
                                     <div style="font-size: 0.9rem; color: #666;">Beløp</div>
-                                    <div style="font-size: 2.5rem; font-weight: 700; color: ${appState.currentUser.color}">50 kr</div>
+                                    <div style="font-size: 2rem; font-weight: 700; color: ${state.currentUser.color}">
+                                        ${stats.totalEarnings} kr
+                                    </div>
                                 </div>
                             </div>
-                            <button onclick="showEmmieStatsPopup()" class="btn"
-                                style="background: ${appState.currentUser.color}; color: white; border: none;
-                                       border-radius: 15px; font-weight: 700; cursor: pointer; width: 100%; padding: 18px;">
-                                📈 Vis detaljert statistikk
-                            </button>
+                            <p style="color: #666; text-align: center;">${stats.message}</p>
                         </div>
                     ` : ''}
                     
-                    <div style="background: #f8f9fa; padding: 20px; border-radius: 15px;">
-                        <p style="color: #666; margin-bottom: 15px;">
-                            <strong>Ukelønnssystemet kommer snart!</strong>
-                        </p>
-                        <p style="color: #666; font-size: 0.95rem;">
-                            Her kan barn ta oppgaver, tjene penger og se statistikk.
-                            Foreldre kan opprette oppgaver og godkjenne utført arbeid.
-                        </p>
+                    <!-- Available tasks -->
+                    <div style="margin-bottom: 30px;">
+                        <h3 style="margin-bottom: 15px;">Tilgjengelige oppgaver</h3>
+                        ${state.choreTasks.filter(task => task.status === 'available').length === 0 ? `
+                            <p style="color: #666; padding: 20px; text-align: center;">Ingen oppgaver tilgjengelig</p>
+                        ` : `
+                            <div style="display: flex; flex-direction: column; gap: 12px;">
+                                ${state.choreTasks.filter(task => task.status === 'available').map(task => `
+                                    <div style="padding: 20px; background: #e8f5e9; border-radius: 12px; border-left: 4px solid #4CAF50;">
+                                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                                            <div>
+                                                <div style="font-weight: 700; margin-bottom: 5px;">${task.title}</div>
+                                                <div style="font-size: 0.9rem; color: #666;">
+                                                    ${task.category === 'hjemme' ? '🏠' : '🌳'} ${task.category} • ${task.amount} kr
+                                                </div>
+                                            </div>
+                                            ${state.currentUser.name !== 'Kim Rune' && state.currentUser.name !== 'Katrine' ? `
+                                                <button onclick="completeChoreTask(${task.id})"
+                                                    style="padding: 8px 16px; background: #4CAF50; color: white;
+                                                           border: none; border-radius: 8px; cursor: pointer;">
+                                                    Ta oppgave
+                                                </button>
+                                            ` : ''}
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        `}
                     </div>
-                </div>
-            `;
-        }
-        
-        // ==================== GLOBAL FUNCTIONS ====================
-        window.addNewItem = function() {
-            const input = document.getElementById('newItemInput');
-            if (!input) return;
-            
-            addItem(input.value.trim());
-            input.value = '';
-            input.focus();
-        };
-        
-        // Make core functions available globally
-        window.addItem = addItem;
-        window.deleteItem = deleteItem;
-        window.switchTab = switchTab;
-        window.selectUser = selectUser;
-        window.logout = logout;
-        window.showEmmieStatsPopup = showEmmieStatsPopup;
-        window.showToast = showToast;
-        
-        // ==================== INITIALIZATION ====================
-        function initApp() {
-            console.log('🚀 Familieapp starter...');
-            
-            // Check for saved user
-            const savedUser = localStorage.getItem('familieapp_user');
-            if (savedUser) {
-                selectUser(savedUser);
-            } else {
-                renderApp();
-            }
-            
-            // Add test functions
-            window.testApp = function() {
-                showToast('App testet! ✅');
-                console.log('✅ App er oppe og går');
-                console.log('📊 Test Emmies statistikk: showEmmieStatsPopup()');
-                console.log('🛒 Test handleliste: Legg til noe i input-feltet');
-            };
-            
-            console.log('✅ App klar! Test med: testApp()');
-        }
-        
-        // Start the app when page loads
-        document.addEventListener('DOMContentLoaded', initApp);
-        
-        // Also start immediately (in case DOM already loaded)
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', initApp);
-        } else {
-            initApp();
-        }
-    </script>
-</body>
-</html>
+                    
+                    <!-- Parent section -->
+                    ${state.currentUser.name === 'Kim Rune' || state.currentUser.name === 'Katrine' ? `
+                        <div style="background: #e3f2fd; padding: 20px; border-radius: 12px;">
+                            <h3 style="margin-bottom: 15px;">Foreldreområde</h3>
+                            <p style="color: #666; margin-bottom: 15px;">Her kan du opprette nye oppgaver og godkjenne fullførte oppgaver.</p>
+                            <div style="display: flex; gap: 10px;">
+                                <input type="text" id="newTaskTitle" placeholder="Oppgavetittel"
+                                    style="flex: 1; padding: 10px; border: 1px solid #ccc; border-radius: 6
