@@ -6,147 +6,183 @@
   <title>Familietid</title>
   <style>
     :root{
-      --bg1:#ffecd2; --bg2:#fcb69f;
-      --card:#fff; --text:#111827; --muted:#6b7280;
-      --shadow: 0 10px 30px rgba(0,0,0,.12);
-      --radius:22px;
+      --bg0:#0b1220;
+      --bg1:#0f172a;
+      --card: rgba(255,255,255,.06);
+      --card2: rgba(255,255,255,.08);
+      --border: rgba(255,255,255,.12);
+      --text:#e5e7eb;
+      --muted:#a1a1aa;
+      --good:#22c55e;
+      --bad:#ef4444;
+      --warn:#f59e0b;
+      --shadow: 0 24px 60px rgba(0,0,0,.35);
+      --r:20px;
     }
     *{box-sizing:border-box}
     body{
       margin:0;
-      font-family: system-ui,-apple-system,Segoe UI,Roboto,Arial;
-      background: linear-gradient(135deg,var(--bg1),var(--bg2));
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
       color:var(--text);
+      background:
+        radial-gradient(1200px 600px at 15% 10%, rgba(99,102,241,.22), transparent 55%),
+        radial-gradient(900px 500px at 90% 20%, rgba(34,197,94,.18), transparent 55%),
+        radial-gradient(900px 500px at 40% 90%, rgba(236,72,153,.18), transparent 55%),
+        linear-gradient(180deg, var(--bg0), var(--bg1));
+      min-height:100vh;
       padding:14px;
     }
-    .wrap{max-width:920px;margin:0 auto}
-    .card{background:var(--card); border-radius:var(--radius); box-shadow:var(--shadow)}
-    .top{
-      display:flex; justify-content:space-between; align-items:center; gap:12px;
-      padding:18px;
-      border-radius:var(--radius);
-      color:#fff;
+    .wrap{max-width:980px;margin:0 auto}
+    .card{
+      background: linear-gradient(180deg, var(--card), var(--card2));
+      border:1px solid var(--border);
+      border-radius: calc(var(--r) + 6px);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+      backdrop-filter: blur(10px);
     }
-    .topL{display:flex; align-items:center; gap:14px}
-    .emoji{font-size:40px; line-height:1}
-    .h1{margin:0; font-weight:900; font-size:20px}
-    .sub{margin:2px 0 0 0; opacity:.9; font-size:13px}
+    .top{
+      display:flex; align-items:center; justify-content:space-between; gap:12px;
+      padding:18px 18px;
+      border-bottom:1px solid var(--border);
+    }
+    .topL{display:flex; gap:14px; align-items:center}
+    .avatar{
+      width:52px;height:52px;border-radius:16px;
+      display:grid; place-items:center;
+      background: rgba(255,255,255,.08);
+      border:1px solid rgba(255,255,255,.14);
+      font-size:26px;
+    }
+    .h1{margin:0;font-size:18px;font-weight:900;letter-spacing:.2px}
+    .sub{margin:2px 0 0 0;color:var(--muted);font-size:12px;font-weight:700}
+    .pill{
+      display:inline-flex; align-items:center; gap:8px;
+      padding:8px 10px; border-radius:999px;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.06);
+      font-weight:900; font-size:12px;
+    }
+    .dot{width:9px;height:9px;border-radius:50%;}
     .btn{
-      border:0; cursor:pointer; font-weight:900;
-      border-radius:14px; padding:12px 14px;
+      border:1px solid rgba(255,255,255,.16);
+      background: rgba(255,255,255,.06);
+      color:var(--text);
+      padding:12px 14px;
+      border-radius:14px;
+      font-weight:900;
+      cursor:pointer;
       user-select:none;
     }
-    .btn.ghost{background:rgba(255,255,255,.18); color:#fff; border:2px solid rgba(255,255,255,.35)}
-    .btn.primary{background:#111827; color:#fff}
-    .btn.danger{background:#ef4444; color:#fff}
-    .btn.ok{background:#16a34a; color:#fff}
-    .btn.small{padding:10px 12px; border-radius:12px; font-weight:900}
-    .tabs{display:flex; flex-wrap:wrap; gap:10px; margin:14px 0}
-    .tab{
-      flex:1; min-width:145px;
-      padding:14px 12px;
-      border-radius:16px;
-      background:#fff;
-      color:#111827;
-      border:3px solid transparent;
-      font-weight:900;
-      cursor:pointer;
+    .btn:hover{background: rgba(255,255,255,.10)}
+    .btn.primary{background: rgba(99,102,241,.22); border-color: rgba(99,102,241,.35)}
+    .btn.good{background: rgba(34,197,94,.20); border-color: rgba(34,197,94,.35)}
+    .btn.bad{background: rgba(239,68,68,.18); border-color: rgba(239,68,68,.35)}
+    .btn.small{padding:10px 12px;border-radius:12px}
+    .tabs{
+      display:flex; flex-wrap:wrap; gap:10px;
+      padding:12px 14px;
+      border-bottom:1px solid var(--border);
     }
-    .tab.active{color:#fff}
-    .content{padding:18px}
-    .row{display:flex; gap:10px; flex-wrap:wrap}
-    .field{
+    .tab{
+      flex:1; min-width:140px;
+      padding:12px 12px;
+      border-radius:16px;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.05);
+      color:var(--text);
+      font-weight:950;
+      cursor:pointer;
+      display:flex; gap:10px; align-items:center; justify-content:center;
+    }
+    .tab.active{background: rgba(99,102,241,.25); border-color: rgba(99,102,241,.35)}
+    .content{padding:16px}
+    .grid2{display:grid; grid-template-columns:1fr 1fr; gap:12px}
+    .grid3{display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px}
+    @media (max-width:860px){ .grid2,.grid3{grid-template-columns:1fr} }
+
+    .panel{
+      padding:14px;
+      border-radius:18px;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.05);
+    }
+    .title{font-weight:950;margin:0 0 10px 0;letter-spacing:.2px}
+    .muted{color:var(--muted);font-weight:700}
+    .row{display:flex; gap:10px; flex-wrap:wrap; align-items:center}
+    .field, select{
       width:100%;
-      border:2px solid #e5e7eb;
+      border:1px solid rgba(255,255,255,.16);
+      background: rgba(0,0,0,.20);
+      color:var(--text);
       border-radius:14px;
       padding:12px 12px;
-      font-size:16px;
       outline:none;
+      font-size:15px;
+      font-weight:800;
     }
-    .field:focus{border-color:#11182733}
-    .pill{
-      display:inline-block;
-      padding:4px 10px;
-      border-radius:999px;
-      font-size:12px;
-      font-weight:900;
-      background:#11182710;
-      color:#111827;
-    }
+    .field:focus, select:focus{border-color: rgba(99,102,241,.55)}
     .list{display:flex; flex-direction:column; gap:10px; margin-top:12px}
     .item{
-      background:#f8fafc;
-      border-radius:16px;
+      display:flex; justify-content:space-between; gap:10px; align-items:flex-start;
       padding:14px;
-      display:flex;
-      justify-content:space-between;
-      align-items:flex-start;
-      gap:10px;
-      border-left:6px solid #11182733;
+      border-radius:18px;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.04);
     }
-    .item .title{font-weight:900; font-size:16px}
-    .meta{color:var(--muted); font-size:12px; margin-top:4px}
-    .muted{color:var(--muted)}
-    .grid2{display:grid; grid-template-columns:1fr 1fr; gap:10px}
-    @media (max-width:780px){
-      body{padding:10px}
-      .btn{padding:16px 14px}
-      .tab{min-width:130px}
-      .grid2{grid-template-columns:1fr}
-      .content{padding:14px}
+    .itL{min-width:0}
+    .itT{font-weight:950}
+    .itM{margin-top:4px; font-size:12px; color:var(--muted); font-weight:750}
+    .itR{display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end}
+    .chip{
+      display:inline-flex; gap:8px; align-items:center;
+      padding:6px 10px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.05);
+      font-size:12px; font-weight:900;
     }
-
-    /* Toast */
+    .kpi{display:flex; gap:10px; flex-wrap:wrap}
+    .kpi .chip{padding:8px 12px}
+    .hr{height:1px;background:rgba(255,255,255,.10);margin:12px 0}
     .toast{
-      position:fixed; top:16px; left:50%; transform:translateX(-50%);
-      background:#111827;
-      color:#fff;
-      padding:12px 16px;
+      position:fixed; top:14px; left:50%; transform:translateX(-50%);
+      max-width:min(900px,92vw);
+      padding:12px 14px;
       border-radius:14px;
-      box-shadow:0 12px 30px rgba(0,0,0,.25);
-      z-index:9999;
+      border:1px solid rgba(255,255,255,.16);
+      background: rgba(0,0,0,.55);
+      backdrop-filter: blur(10px);
+      font-weight:900;
       display:flex; gap:10px; align-items:center;
-      font-weight:900;
-      max-width:min(780px,92vw);
-      cursor:pointer;
-      opacity:0; transition:opacity .18s ease, transform .18s ease;
+      opacity:0; pointer-events:none;
+      transition:opacity .18s ease, transform .18s ease;
+      z-index:9999;
     }
-    .toast.show{opacity:1; transform:translateX(-50%) translateY(0)}
-    .toast.success{background:#16a34a}
-    .toast.warn{background:#f59e0b}
-    .toast.error{background:#ef4444}
-    .toast .hint{opacity:.9; font-weight:800; font-size:12px}
-    .sep{height:1px; background:#e5e7eb; margin:14px 0}
-    .badge{
-      display:inline-flex; align-items:center; gap:8px;
-      background:#11182710;
-      padding:8px 10px;
-      border-radius:14px;
-      font-weight:900;
-      font-size:13px;
-    }
+    .toast.show{opacity:1; pointer-events:auto; transform:translateX(-50%) translateY(0)}
+    .toast.good{border-color: rgba(34,197,94,.35)}
+    .toast.bad{border-color: rgba(239,68,68,.35)}
+    .toast.warn{border-color: rgba(245,158,11,.40)}
   </style>
 </head>
-
 <body>
   <div class="wrap">
-    <div id="app" class="card"></div>
+    <div class="card" id="app"></div>
   </div>
 
-  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <script>
-/** ============================================================
- *  Familietid – én-fil app (Supabase REST via fetch)
- *  Ingen eksterne biblioteker, ingen “evig loading”.
- *  ============================================================ */
-
-/* === Supabase (prefylt) === */
+/* ============================================================
+   SUPABASE (prefylt)
+   ============================================================ */
 const SUPABASE_URL = "https://tifhelbmaqoojqtqhzso.supabase.co";
 const SUPABASE_ANON_KEY =
 "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRpZmhlbGJtYXFvb2pxdHFoenNvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg0ODY5NTYsImV4cCI6MjA4NDA2Mjk1Nn0.WFMmeOZvEYL9AAoLRHFVx97b8hT9Z2us-iWAxAjv9Fg";
 
-/* === “Familiebrukere” === */
+/* ============================================================
+   USERS (enkel “rolle”-styring uten auth)
+   ============================================================ */
 const USERS = [
   { name:"Emmie",   emoji:"🌸", color:"#ff6b9d", role:"child"  },
   { name:"Thelma",  emoji:"🦋", color:"#c471ed", role:"child"  },
@@ -155,1169 +191,679 @@ const USERS = [
   { name:"Kim Rune",emoji:"⚡", color:"#4a90e2", role:"parent" },
 ];
 
-const LS_KEY = "familietid_user";
+const LS_USER = "familietid_user_v2";
 
-/* === App state === */
+/* ============================================================
+   STATE
+   ============================================================ */
 const state = {
   user: null,
   tab: "shopping",
-  online: true,
-  loading: { shopping:false, calendar:false, notes:false, maintenance:false, allowance:false },
+  loading: false,
   data: {
     shopping: [],
-    calendar: [],
-    notes: [],
-    maintenance: [],
-    chores: [],
-    workers: [],
+    choresTasks: [],
+    choresWorkers: [],
+    weekly: [],
   },
-  lastDeleted: null, // for undo
+  ui: {
+    weekKey: "auto", // auto => current week if exists else latest
+  }
 };
 
 const appEl = document.getElementById("app");
 const toastEl = document.getElementById("toast");
 
 /* ============================================================
- *  Helpers
- * ============================================================ */
-function escapeHtml(s){
-  return (s ?? "").toString().replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
-}
-function fmtAgo(iso){
-  if(!iso) return "";
-  const d = new Date(iso);
-  const diff = Date.now() - d.getTime();
-  const m = Math.floor(diff/60000);
-  const h = Math.floor(diff/3600000);
-  const day = Math.floor(diff/86400000);
-  if(m < 1) return "akkurat nå";
-  if(m < 60) return `${m} min siden`;
-  if(h < 24) return `${h} t siden`;
-  return d.toLocaleString("no-NO", { day:"2-digit", month:"short", hour:"2-digit", minute:"2-digit" });
-}
-function fmtDateOnly(iso){
-  const d = new Date(iso);
-  return d.toLocaleDateString("no-NO", { weekday:"short", day:"2-digit", month:"short" });
-}
-function fmtTimeOnly(iso){
-  const d = new Date(iso);
-  return d.toLocaleTimeString("no-NO", { hour:"2-digit", minute:"2-digit" });
-}
-function isParent(){
-  return state.user?.role === "parent";
-}
-
-function toast(msg, type="success", hint=""){
-  toastEl.className = `toast ${type}`;
-  toastEl.innerHTML = `<div>${type==="success"?"✅":type==="warn"?"⚠️":"❌"}</div>
-                       <div><div>${escapeHtml(msg)}</div>${hint?`<div class="hint">${escapeHtml(hint)}</div>`:""}</div>`;
-  toastEl.onclick = () => {
-    if(state.lastDeleted){
-      undoLastDelete();
-    } else {
-      hideToast();
-    }
-  };
-  requestAnimationFrame(()=>{
-    toastEl.classList.add("show");
-  });
+   UTIL
+   ============================================================ */
+function toast(msg, type="good"){
+  const icon = type==="good"?"✅":type==="bad"?"❌":"⚠️";
+  toastEl.className = `toast show ${type}`;
+  toastEl.innerHTML = `<span>${icon}</span><span>${escapeHtml(msg)}</span>`;
   clearTimeout(toastEl._t);
-  toastEl._t = setTimeout(hideToast, 3300);
+  toastEl._t = setTimeout(()=>{ toastEl.className="toast"; }, 2600);
 }
-function hideToast(){ toastEl.classList.remove("show"); }
-
-function setOnlineFlag(ok){
-  state.online = ok;
+function escapeHtml(s){
+  return (s ?? "").toString().replace(/[&<>"']/g, c => ({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+  }[c]));
 }
+function isoDate(d=new Date()){ return new Date(d).toISOString(); }
+function nowISO(){ return new Date().toISOString(); }
+function fmtShort(iso){
+  if(!iso) return "";
+  return new Date(iso).toLocaleString("no-NO",{day:"2-digit",month:"short",hour:"2-digit",minute:"2-digit"});
+}
+function currentISOWeekKey(){
+  // ISO week key: YYYY-Www
+  const d = new Date();
+  const target = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+  const dayNr = (target.getUTCDay() + 6) % 7;
+  target.setUTCDate(target.getUTCDate() - dayNr + 3);
+  const firstThursday = new Date(Date.UTC(target.getUTCFullYear(),0,4));
+  const diff = target - firstThursday;
+  const week = 1 + Math.round(diff / 604800000);
+  const year = target.getUTCFullYear();
+  return `${year}-W${String(week).padStart(2,"0")}`;
+}
+function weekKeyFromRow(r){ return `${r.year}-W${String(r.week).padStart(2,"0")}`; }
 
 /* ============================================================
- *  Supabase REST wrapper
- * ============================================================ */
-async function sb(path, { method="GET", query={}, body=null, prefer="return=representation" } = {}){
-  const url = new URL(`${SUPABASE_URL}/rest/v1/${path}`);
-  for(const [k,v] of Object.entries(query || {})){
-    url.searchParams.set(k, v);
-  }
-  const res = await fetch(url.toString(), {
+   SUPABASE REST HELPERS
+   ============================================================ */
+async function sb(path, { method="GET", body=null, headers={} }={}){
+  const url = `${SUPABASE_URL}/rest/v1/${path}`;
+  const res = await fetch(url, {
     method,
     headers: {
       "apikey": SUPABASE_ANON_KEY,
       "Authorization": `Bearer ${SUPABASE_ANON_KEY}`,
       "Content-Type": "application/json",
-      "Prefer": prefer,
+      "Prefer": "return=representation",
+      ...headers
     },
-    body: body ? JSON.stringify(body) : undefined
+    body: body ? JSON.stringify(body) : null
   });
+  const text = await res.text();
+  const data = text ? JSON.parse(text) : null;
   if(!res.ok){
-    const text = await res.text().catch(()=> "");
-    throw new Error(`${res.status} ${res.statusText} :: ${text}`);
+    throw new Error((data && (data.message || data.error_description)) || text || `HTTP ${res.status}`);
   }
-  if(res.status === 204) return null;
-  return res.json();
+  return data;
 }
+function q(s){ return encodeURIComponent(s); }
 
 /* ============================================================
- *  Data loaders
- * ============================================================ */
+   LOADERS
+   ============================================================ */
 async function loadShopping(){
-  state.loading.shopping = true; render();
-  try{
-    const rows = await sb("shopping_items", { query:{ select:"*", order:"timestamp.desc" } });
-    state.data.shopping = rows || [];
-    setOnlineFlag(true);
-  } catch(e){
-    console.error(e);
-    setOnlineFlag(false);
-    toast("Kunne ikke hente handleliste (offline?)", "warn", "Du kan fortsatt bruke appen – prøver igjen senere.");
-  } finally{
-    state.loading.shopping = false; render();
-  }
+  return await sb(`shopping_items?select=*&order=timestamp.desc`);
 }
-
-async function loadNotes(){
-  state.loading.notes = true; render();
-  try{
-    const rows = await sb("notes", { query:{ select:"*", order:"timestamp.desc" } });
-    state.data.notes = rows || [];
-    setOnlineFlag(true);
-  } catch(e){
-    console.error(e);
-    setOnlineFlag(false);
-    toast("Kunne ikke hente notater", "warn");
-  } finally{
-    state.loading.notes = false; render();
-  }
-}
-
-async function loadMaintenance(){
-  state.loading.maintenance = true; render();
-  try{
-    const rows = await sb("maintenance_tasks", { query:{ select:"*", order:"priority.asc" } });
-    state.data.maintenance = rows || [];
-    setOnlineFlag(true);
-  } catch(e){
-    console.error(e);
-    setOnlineFlag(false);
-    toast("Kunne ikke hente vedlikehold", "warn");
-  } finally{
-    state.loading.maintenance = false; render();
-  }
-}
-
-async function loadCalendar(){
-  state.loading.calendar = true; render();
-  try{
-    // Henter 120 dager frem + 30 dager tilbake (bredt nok for familiebruk)
-    const from = new Date(Date.now() - 30*86400000).toISOString();
-    const to   = new Date(Date.now() + 120*86400000).toISOString();
-    const rows = await sb("calendar_events", {
-      query:{
-        select:"*",
-        "start_time": `gte.${from}`,
-        "start_time": `gte.${from}`, // PostgREST bruker siste hvis du dobler – så vi gjør det i URL på annen måte under
-      }
-    });
-    // Over: begrensning i vår wrapper hvis samme key brukes to ganger.
-    // Løsning: hent alt sortert, og filter client-side.
-    // (Kalender-tabellen er normalt liten i familie-app.)
-    const all = await sb("calendar_events", { query:{ select:"*", order:"start_time.asc" } });
-    state.data.calendar = (all || []).filter(ev=>{
-      const t = new Date(ev.start_time).getTime();
-      return t >= (Date.now() - 30*86400000) && t <= (Date.now() + 120*86400000);
-    });
-    setOnlineFlag(true);
-  } catch(e){
-    console.error(e);
-    setOnlineFlag(false);
-    toast("Kunne ikke hente kalender", "warn");
-  } finally{
-    state.loading.calendar = false; render();
-  }
-}
-
-async function loadAllowance(){
-  state.loading.allowance = true; render();
-  try{
-    const chores = await sb("chore_tasks", { query:{ select:"*", order:"created_at.desc" } });
-    const workers = await sb("chore_workers", { query:{ select:"*", order:"started_at.desc" } });
-    state.data.chores = chores || [];
-    state.data.workers = workers || [];
-    setOnlineFlag(true);
-  } catch(e){
-    console.error(e);
-    setOnlineFlag(false);
-    toast("Kunne ikke hente ukelønn-data", "warn");
-  } finally{
-    state.loading.allowance = false; render();
-  }
+async function loadChores(){
+  const [tasks, workers, weekly] = await Promise.all([
+    sb(`chore_tasks?select=*&order=created_at.desc`),
+    sb(`chore_workers?select=*&order=started_at.desc`),
+    // view (du har opprettet weekly_earnings)
+    sb(`weekly_earnings?select=*&order=year.desc,week.desc,worker_name.asc`)
+      .catch(()=>[]) // hvis viewen mangler, fail-safe
+  ]);
+  return { tasks, workers, weekly };
 }
 
 /* ============================================================
- *  Actions – Shopping
- * ============================================================ */
-async function addShopping(){
-  const text = document.getElementById("shop_text").value.trim();
-  const qty  = parseInt(document.getElementById("shop_qty").value || "1", 10);
-  if(!text) return toast("Skriv inn en vare først", "warn");
-  try{
-    const row = await sb("shopping_items", {
-      method:"POST",
-      body:{
-        text,
-        quantity: isFinite(qty) && qty>0 ? qty : 1,
-        checked:false,
-        added_by: state.user.name,
-        added_by_color: state.user.color
-      }
-    });
-    // row kan være array eller object avhengig av prefer; vi bruker return=representation => array
-    const inserted = Array.isArray(row) ? row[0] : row;
-    if(inserted) state.data.shopping.unshift(inserted);
-    document.getElementById("shop_text").value = "";
-    document.getElementById("shop_qty").value = "1";
-    toast("Vare lagt til");
-    render();
-  } catch(e){
-    console.error(e);
-    toast("Kunne ikke lagre vare", "error", "Sjekk at RLS er av/policies tillater insert.");
-  }
-}
-
-async function toggleShopping(id, current){
-  try{
-    const row = await sb(`shopping_items?id=eq.${id}`, {
-      method:"PATCH",
-      body:{ checked: !current }
-    });
-    // update local
-    const idx = state.data.shopping.findIndex(x=>x.id===id);
-    if(idx>=0) state.data.shopping[idx].checked = !current;
-    render();
-  } catch(e){
-    console.error(e);
-    toast("Kunne ikke oppdatere vare", "error");
-  }
-}
-
-async function deleteShopping(id){
-  const item = state.data.shopping.find(x=>x.id===id);
-  if(!item) return;
-  state.lastDeleted = { type:"shopping", payload:item, when:Date.now() };
-  try{
-    await sb(`shopping_items?id=eq.${id}`, { method:"DELETE", prefer:"return=minimal" });
-    state.data.shopping = state.data.shopping.filter(x=>x.id!==id);
-    toast(`Slettet: ${item.text}`, "warn", "Klikk på toasten for å angre");
-    render();
-  } catch(e){
-    console.error(e);
-    state.lastDeleted = null;
-    toast("Kunne ikke slette", "error");
-  }
-}
-
-async function undoLastDelete(){
-  const d = state.lastDeleted;
-  if(!d) return;
-  // kun angre siste 20 sek
-  if(Date.now() - d.when > 20000){
-    state.lastDeleted = null;
-    return toast("For sent å angre", "warn");
-  }
-  try{
-    if(d.type === "shopping"){
-      const it = d.payload;
-      // re-insert (ny id)
-      const row = await sb("shopping_items", {
-        method:"POST",
-        body:{
-          text: it.text,
-          quantity: it.quantity ?? 1,
-          checked: it.checked ?? false,
-          added_by: it.added_by || state.user.name,
-          added_by_color: it.added_by_color || state.user.color
-        }
-      });
-      const inserted = Array.isArray(row) ? row[0] : row;
-      if(inserted) state.data.shopping.unshift(inserted);
-      state.lastDeleted = null;
-      toast("Angret – varen er tilbake");
-      render();
-      return;
-    }
-  } catch(e){
-    console.error(e);
-    toast("Kunne ikke angre", "error");
-  } finally{
-    state.lastDeleted = null;
-  }
-}
-
-/* ============================================================
- *  Actions – Notes
- * ============================================================ */
-async function addNote(){
-  const txt = document.getElementById("note_text").value.trim();
-  if(!txt) return toast("Skriv et notat først", "warn");
-  try{
-    const row = await sb("notes", {
-      method:"POST",
-      body:{
-        text: txt,
-        added_by: state.user.name,
-        added_by_color: state.user.color
-      }
-    });
-    const inserted = Array.isArray(row) ? row[0] : row;
-    if(inserted) state.data.notes.unshift(inserted);
-    document.getElementById("note_text").value = "";
-    toast("Notat lagret");
-    render();
-  } catch(e){
-    console.error(e);
-    toast("Kunne ikke lagre notat", "error");
-  }
-}
-async function deleteNote(id){
-  try{
-    await sb(`notes?id=eq.${id}`, { method:"DELETE", prefer:"return=minimal" });
-    state.data.notes = state.data.notes.filter(n=>n.id!==id);
-    toast("Notat slettet");
-    render();
-  } catch(e){
-    console.error(e);
-    toast("Kunne ikke slette notat", "error");
-  }
-}
-
-/* ============================================================
- *  Actions – Maintenance
- * ============================================================ */
-async function addMaintenance(){
-  const txt = document.getElementById("maint_text").value.trim();
-  if(!txt) return toast("Skriv en oppgave først", "warn");
-  const maxP = state.data.maintenance.reduce((m,x)=>Math.max(m, x.priority||0), 0);
-  try{
-    const row = await sb("maintenance_tasks", {
-      method:"POST",
-      body:{
-        text: txt,
-        completed:false,
-        priority: maxP+1,
-        added_by: state.user.name,
-        added_by_color: state.user.color
-      }
-    });
-    const inserted = Array.isArray(row) ? row[0] : row;
-    if(inserted) state.data.maintenance.push(inserted);
-    document.getElementById("maint_text").value = "";
-    toast("Vedlikehold lagt til");
-    render();
-  } catch(e){
-    console.error(e);
-    toast("Kunne ikke lagre vedlikehold", "error");
-  }
-}
-async function toggleMaintenance(id, current){
-  try{
-    await sb(`maintenance_tasks?id=eq.${id}`, { method:"PATCH", body:{ completed: !current } });
-    const idx = state.data.maintenance.findIndex(x=>x.id===id);
-    if(idx>=0) state.data.maintenance[idx].completed = !current;
-    toast(!current ? "Markert som ferdig" : "Åpnet igjen");
-    render();
-  } catch(e){
-    console.error(e);
-    toast("Kunne ikke oppdatere", "error");
-  }
-}
-async function deleteMaintenance(id){
-  try{
-    await sb(`maintenance_tasks?id=eq.${id}`, { method:"DELETE", prefer:"return=minimal" });
-    state.data.maintenance = state.data.maintenance.filter(x=>x.id!==id);
-    toast("Slettet");
-    render();
-  } catch(e){
-    console.error(e);
-    toast("Kunne ikke slette", "error");
-  }
-}
-
-/* ============================================================
- *  Actions – Calendar
- * ============================================================ */
-async function addCalendar(){
-  const title = document.getElementById("cal_title").value.trim();
-  const date  = document.getElementById("cal_date").value;
-  const time  = document.getElementById("cal_time").value;
-  const dur   = parseInt(document.getElementById("cal_dur").value || "60", 10);
-  const allDay= document.getElementById("cal_allday").checked;
-
-  if(!title) return toast("Skriv inn tittel", "warn");
-  if(!date) return toast("Velg dato", "warn");
-
-  let start;
-  if(allDay){
-    // all-day: start 08:00 local
-    start = new Date(`${date}T08:00:00`);
-  } else {
-    if(!time) return toast("Velg tidspunkt", "warn");
-    start = new Date(`${date}T${time}:00`);
-  }
-  const startIso = start.toISOString();
-  const endIso = new Date(start.getTime() + (isFinite(dur)?dur:60)*60000).toISOString();
-
-  try{
-    const row = await sb("calendar_events", {
-      method:"POST",
-      body:{
-        title,
-        start_time: startIso,
-        end_time: endIso,
-        duration: isFinite(dur)?dur:60,
-        all_day: !!allDay,
-        added_by: state.user.name,
-        added_by_color: state.user.color
-      }
-    });
-    const inserted = Array.isArray(row) ? row[0] : row;
-    if(inserted){
-      state.data.calendar.push(inserted);
-      state.data.calendar.sort((a,b)=>new Date(a.start_time)-new Date(b.start_time));
-    }
-    document.getElementById("cal_title").value = "";
-    toast("Hendelse lagt til");
-    render();
-  } catch(e){
-    console.error(e);
-    toast("Kunne ikke lagre kalenderhendelse", "error");
-  }
-}
-
-async function deleteCalendar(id){
-  try{
-    await sb(`calendar_events?id=eq.${id}`, { method:"DELETE", prefer:"return=minimal" });
-    state.data.calendar = state.data.calendar.filter(x=>x.id!==id);
-    toast("Hendelse slettet");
-    render();
-  } catch(e){
-    console.error(e);
-    toast("Kunne ikke slette", "error");
-  }
-}
-
-/* ============================================================
- *  Actions – Allowance (Chores)
- * ============================================================ */
-function calcStatsForChild(name){
-  // Godkjente utbetalinger er worker rows med approved_at + earned_amount
-  const approved = state.data.workers.filter(w => w.worker_name === name && w.approved_at);
-  const sum = approved.reduce((acc,w)=>acc + (w.earned_amount||0), 0);
-  const pending = state.data.workers.filter(w => w.worker_name === name && w.completed_at && !w.approved_at).length;
-  return { approvedCount: approved.length, sum, pending };
-}
-
-function choreStatusLabel(s){
-  const map = {
-    available:"Tilgjengelig",
-    in_progress:"Pågår",
-    completed:"Utført (venter)",
-    approved:"Godkjent",
-    rejected:"Avvist"
+   SHOPPING ACTIONS
+   ============================================================ */
+async function addShopping(text, qty){
+  if(!text.trim()) return toast("Skriv inn en vare først", "warn");
+  const row = {
+    text: text.trim(),
+    quantity: Number(qty)||1,
+    checked: false,
+    added_by: state.user.name,
+    added_by_color: state.user.color,
+    timestamp: nowISO()
   };
-  return map[s] || s || "";
+  await sb(`shopping_items`, { method:"POST", body: row });
+  toast("Lagt til!", "good");
+  await refresh();
 }
-
-async function createChoreTask(){
-  if(!isParent()) return toast("Bare foreldre kan opprette oppgaver", "warn");
-  const title = document.getElementById("ch_title").value.trim();
-  const amount = parseInt(document.getElementById("ch_amount").value || "0",10);
-  const category = document.getElementById("ch_cat").value;
-  if(!title) return toast("Skriv inn oppgavetittel", "warn");
-  if(!isFinite(amount) || amount<=0) return toast("Skriv inn beløp (kr)", "warn");
-
-  try{
-    const row = await sb("chore_tasks", {
-      method:"POST",
-      body:{
-        title,
-        description: null,
-        amount,
-        task_type: "once",
-        category: category || "hjemme",
-        status: "available",
-        created_by: state.user.name,
-        created_by_color: state.user.color,
-        proposed_by_child: false,
-        created_at: new Date().toISOString()
-      }
-    });
-    const inserted = Array.isArray(row) ? row[0] : row;
-    if(inserted) state.data.chores.unshift(inserted);
-    document.getElementById("ch_title").value = "";
-    document.getElementById("ch_amount").value = "";
-    toast("Oppgave opprettet");
-    render();
-  } catch(e){
-    console.error(e);
-    toast("Kunne ikke opprette oppgave", "error");
-  }
+async function toggleShopping(item){
+  await sb(`shopping_items?id=eq.${item.id}`, {
+    method:"PATCH",
+    body: { checked: !item.checked }
+  });
+  await refresh(false);
 }
-
-function getWorkerForTask(taskId){
-  return state.data.workers.find(w => w.task_id === taskId);
-}
-
-async function takeTask(taskId){
-  if(isParent()) return toast("Barn tar oppgaver 🙂", "warn");
-  const t = state.data.chores.find(x=>x.id===taskId);
-  if(!t) return;
-  if(t.status !== "available") return toast("Oppgaven er ikke tilgjengelig", "warn");
-
-  try{
-    // 1) lag worker rad
-    const wr = await sb("chore_workers", {
-      method:"POST",
-      body:{
-        task_id: taskId,
-        worker_name: state.user.name,
-        worker_color: state.user.color,
-        percentage: 100,
-        confirmed: true,
-        earned_amount: null,
-        started_at: new Date().toISOString()
-      }
-    });
-    const insertedW = Array.isArray(wr) ? wr[0] : wr;
-    if(insertedW) state.data.workers.unshift(insertedW);
-
-    // 2) oppdater task status
-    await sb(`chore_tasks?id=eq.${taskId}`, { method:"PATCH", body:{ status:"in_progress" } });
-    t.status = "in_progress";
-
-    toast("Oppgave tatt! 💪");
-    render();
-  } catch(e){
-    console.error(e);
-    toast("Kunne ikke ta oppgaven", "error");
-  }
-}
-
-async function completeTask(taskId){
-  if(isParent()) return toast("Barn markerer fullført 🙂", "warn");
-  const t = state.data.chores.find(x=>x.id===taskId);
-  if(!t) return;
-  if(t.status !== "in_progress") return toast("Oppgaven må være 'pågår'", "warn");
-  const w = getWorkerForTask(taskId);
-  if(!w || w.worker_name !== state.user.name) return toast("Dette er ikke din oppgave", "warn");
-
-  try{
-    const now = new Date().toISOString();
-    await sb(`chore_workers?id=eq.${w.id}`, { method:"PATCH", body:{ completed_at: now } });
-    w.completed_at = now;
-
-    await sb(`chore_tasks?id=eq.${taskId}`, { method:"PATCH", body:{ status:"completed" } });
-    t.status = "completed";
-
-    toast("Markert som fullført – venter på godkjenning");
-    render();
-  } catch(e){
-    console.error(e);
-    toast("Kunne ikke markere fullført", "error");
-  }
-}
-
-async function approveTask(taskId){
-  if(!isParent()) return toast("Bare foreldre kan godkjenne", "warn");
-  const t = state.data.chores.find(x=>x.id===taskId);
-  if(!t) return;
-  if(t.status !== "completed") return toast("Oppgaven må være 'utført (venter)'", "warn");
-  const w = getWorkerForTask(taskId);
-  if(!w || !w.completed_at) return toast("Mangler worker/fullført", "warn");
-
-  try{
-    const now = new Date().toISOString();
-    // oppdater worker
-    await sb(`chore_workers?id=eq.${w.id}`, {
-      method:"PATCH",
-      body:{
-        approved_at: now,
-        approved_by: state.user.name,
-        earned_amount: t.amount
-      }
-    });
-    w.approved_at = now;
-    w.approved_by = state.user.name;
-    w.earned_amount = t.amount;
-
-    // oppdater task
-    await sb(`chore_tasks?id=eq.${taskId}`, {
-      method:"PATCH",
-      body:{
-        status:"approved",
-        approved_at: now,
-        approved_by: state.user.name
-      }
-    });
-    t.status = "approved";
-    t.approved_at = now;
-    t.approved_by = state.user.name;
-
-    toast("Godkjent ✅");
-    render();
-  } catch(e){
-    console.error(e);
-    toast("Kunne ikke godkjenne", "error");
-  }
+async function deleteShopping(item){
+  await sb(`shopping_items?id=eq.${item.id}`, { method:"DELETE", headers: {"Prefer":"return=minimal"} });
+  toast("Slettet", "warn");
+  await refresh();
 }
 
 /* ============================================================
- *  Render
- * ============================================================ */
-function tabBtn(id, label){
-  const u = state.user;
-  const active = state.tab === id;
-  const style = active
-    ? `background:${u.color}; border-color:${u.color};`
-    : `border-color:${u.color}; color:${u.color};`;
-  return `<button class="tab ${active?"active":""}" style="${style}" onclick="switchTab('${id}')">${label}</button>`;
+   CHORES / UKELØNN ACTIONS
+   ============================================================ */
+function isParent(){ return state.user?.role === "parent"; }
+function isChild(){ return state.user?.role === "child"; }
+
+async function createFamilyTask({title, amount, category, task_type}){
+  if(!isParent()) return toast("Kun foreldre kan opprette familieoppgaver", "warn");
+  if(!title.trim()) return toast("Oppgavetittel mangler", "warn");
+  const row = {
+    title: title.trim(),
+    description: null,
+    amount: Number(amount)||0,
+    task_type: task_type || "once",
+    category: category || "hjemme",
+    status: "available",
+    created_by: state.user.name,
+    created_by_color: state.user.color,
+    proposed_by_child: false,
+    created_at: nowISO()
+  };
+  await sb(`chore_tasks`, { method:"POST", body: row });
+  toast("Oppgave opprettet", "good");
+  await refresh();
 }
 
-function renderLogin(){
-  appEl.innerHTML = `
-    <div style="padding:20px; text-align:center">
-      <div style="font-size:42px; margin-top:10px">👨‍👩‍👧‍👦</div>
-      <h2 style="margin:10px 0 6px 0; font-weight:950">Familietid</h2>
-      <div class="muted" style="margin-bottom:14px">Velg hvem du er</div>
-      <div style="display:flex; flex-direction:column; gap:12px; max-width:460px; margin:0 auto">
-        ${USERS.map(u=>`
-          <button class="btn" style="background:#fff; border:3px solid ${u.color}; color:${u.color}; padding:16px; border-radius:18px"
-                  onclick="selectUser('${escapeHtml(u.name)}')">
-            <span style="font-size:20px">${u.emoji}</span>
-            <span style="margin-left:10px; font-size:16px; font-weight:950">${escapeHtml(u.name)}</span>
-            <span class="pill" style="margin-left:10px">${u.role==="parent"?"Forelder":"Barn"}</span>
-          </button>
-        `).join("")}
-      </div>
-      <div class="muted" style="margin-top:16px; font-size:12px">Kjører direkte fra Supabase – deles av hele familien.</div>
-    </div>
-  `;
+async function proposeTask({title, amount, category}){
+  if(!isChild()) return toast("Kun barn kan foreslå oppgaver her", "warn");
+  if(!title.trim()) return toast("Oppgavetittel mangler", "warn");
+  const row = {
+    title: title.trim(),
+    description: "Foreslått av barn",
+    amount: Number(amount)||0,
+    task_type: "once",
+    category: category || "hjemme",
+    status: "proposed",
+    created_by: state.user.name,
+    created_by_color: state.user.color,
+    proposed_by_child: true,
+    created_at: nowISO()
+  };
+  await sb(`chore_tasks`, { method:"POST", body: row });
+  toast("Forslag sendt til godkjenning", "good");
+  await refresh();
 }
 
-function renderHeader(){
-  const u = state.user;
-  const online = state.online ? `<span class="badge">🟢 Online</span>` : `<span class="badge">🟠 Offline?</span>`;
-  return `
-    <div class="top" style="background:linear-gradient(135deg, ${u.color} 0%, ${u.color}80 100%);">
-      <div class="topL">
-        <div class="emoji">${u.emoji}</div>
-        <div>
-          <div class="h1">Hei, ${escapeHtml(u.name)}!</div>
-          <div class="sub">${online} <span style="margin-left:8px; opacity:.9">Familietid</span></div>
-        </div>
-      </div>
-      <button class="btn ghost" onclick="logout()">Bytt bruker</button>
-    </div>
-  `;
-}
-
-function renderTabs(){
-  return `
-    <div class="tabs">
-      ${tabBtn("shopping","🛒 Handleliste")}
-      ${tabBtn("calendar","📅 Kalender")}
-      ${tabBtn("notes","📝 Notater")}
-      ${tabBtn("maintenance","🔧 Vedlikehold")}
-      ${tabBtn("allowance","💰 Ukelønn")}
-    </div>
-  `;
-}
-
-function renderShopping(){
-  const loading = state.loading.shopping ? `<span class="pill">Laster…</span>` : "";
-  const items = state.data.shopping;
-  return `
-    <div>
-      <div style="display:flex; align-items:center; justify-content:space-between; gap:10px">
-        <h3 style="margin:0; font-weight:950">🛒 Handleliste</h3>
-        <div>${loading}</div>
-      </div>
-
-      <div class="sep"></div>
-
-      <div class="row" style="align-items:center">
-        <input id="shop_text" class="field" style="flex:2" placeholder="Hva skal vi handle? (Enter)"
-               onkeypress="if(event.key==='Enter'){ addShopping(); }">
-        <input id="shop_qty" class="field" style="flex:0.6; max-width:120px" type="number" min="1" value="1" />
-        <button class="btn primary" onclick="addShopping()">Legg til</button>
-        <button class="btn" style="background:#11182710; color:#111827" onclick="loadShopping()">Oppdater</button>
-      </div>
-
-      <div class="list">
-        ${items.length===0 ? `
-          <div class="item" style="border-left-color:${state.user.color}">
-            <div>
-              <div class="title">Handlelisten er tom</div>
-              <div class="meta">Legg til første vare over 👆</div>
-            </div>
-          </div>
-        ` : items.map(it=>{
-          const left = it.added_by_color || state.user.color;
-          const checked = !!it.checked;
-          return `
-            <div class="item" style="border-left-color:${left}">
-              <div style="flex:1">
-                <div class="title" style="${checked?"text-decoration:line-through; color:#9ca3af":""}">
-                  ${escapeHtml(it.text)} ${it.quantity>1?`<span class="pill">${it.quantity}x</span>`:""}
-                </div>
-                <div class="meta">
-                  <span style="color:${left}; font-weight:950">${escapeHtml(it.added_by||"")}</span>
-                  · ${fmtAgo(it.timestamp)}
-                </div>
-              </div>
-              <div style="display:flex; gap:8px; align-items:center">
-                <button class="btn small" style="background:${left}; color:#fff"
-                        onclick="toggleShopping(${it.id}, ${checked})">${checked?"✅":"◻️"}</button>
-                <button class="btn small danger" onclick="deleteShopping(${it.id})">Slett</button>
-              </div>
-            </div>
-          `;
-        }).join("")}
-      </div>
-    </div>
-  `;
-}
-
-function renderNotes(){
-  const loading = state.loading.notes ? `<span class="pill">Laster…</span>` : "";
-  const notes = state.data.notes;
-  return `
-    <div>
-      <div style="display:flex; align-items:center; justify-content:space-between; gap:10px">
-        <h3 style="margin:0; font-weight:950">📝 Notater</h3>
-        <div>${loading}</div>
-      </div>
-
-      <div class="sep"></div>
-
-      <textarea id="note_text" class="field" style="min-height:110px" placeholder="Skriv et notat…"></textarea>
-      <div class="row" style="margin-top:10px; align-items:center">
-        <button class="btn primary" onclick="addNote()">Lagre notat</button>
-        <button class="btn" style="background:#11182710; color:#111827" onclick="loadNotes()">Oppdater</button>
-      </div>
-
-      <div class="list">
-        ${notes.length===0 ? `
-          <div class="item" style="border-left-color:${state.user.color}">
-            <div>
-              <div class="title">Ingen notater enda</div>
-              <div class="meta">Legg inn et notat over 👆</div>
-            </div>
-          </div>
-        ` : notes.map(n=>{
-          const left = n.added_by_color || state.user.color;
-          return `
-            <div class="item" style="border-left-color:${left}">
-              <div style="flex:1">
-                <div class="title" style="font-weight:850">${escapeHtml(n.text)}</div>
-                <div class="meta">
-                  <span style="color:${left}; font-weight:950">${escapeHtml(n.added_by||"")}</span>
-                  · ${fmtAgo(n.timestamp)}
-                </div>
-              </div>
-              <button class="btn small danger" onclick="deleteNote(${n.id})">Slett</button>
-            </div>
-          `;
-        }).join("")}
-      </div>
-    </div>
-  `;
-}
-
-function renderMaintenance(){
-  const loading = state.loading.maintenance ? `<span class="pill">Laster…</span>` : "";
-  const tasks = state.data.maintenance;
-  return `
-    <div>
-      <div style="display:flex; align-items:center; justify-content:space-between; gap:10px">
-        <h3 style="margin:0; font-weight:950">🔧 Vedlikehold</h3>
-        <div>${loading}</div>
-      </div>
-
-      <div class="sep"></div>
-
-      <div class="row" style="align-items:center">
-        <input id="maint_text" class="field" style="flex:2" placeholder="Ny vedlikeholdsoppgave (Enter)"
-               onkeypress="if(event.key==='Enter'){ addMaintenance(); }">
-        <button class="btn primary" onclick="addMaintenance()">Legg til</button>
-        <button class="btn" style="background:#11182710; color:#111827" onclick="loadMaintenance()">Oppdater</button>
-      </div>
-
-      <div class="list">
-        ${tasks.length===0 ? `
-          <div class="item" style="border-left-color:${state.user.color}">
-            <div>
-              <div class="title">Ingen vedlikeholdsoppgaver</div>
-              <div class="meta">Legg til noe over 👆</div>
-            </div>
-          </div>
-        ` : tasks.map(t=>{
-          const left = t.added_by_color || state.user.color;
-          const done = !!t.completed;
-          return `
-            <div class="item" style="border-left-color:${left}; opacity:${done?0.75:1}">
-              <div style="flex:1">
-                <div class="title" style="${done?"text-decoration:line-through; color:#9ca3af":""}">
-                  ${escapeHtml(t.text)}
-                  <span class="pill">prio ${t.priority ?? ""}</span>
-                </div>
-                <div class="meta">
-                  <span style="color:${left}; font-weight:950">${escapeHtml(t.added_by||"")}</span>
-                  ${t.timestamp?`· ${fmtAgo(t.timestamp)}`:""}
-                </div>
-              </div>
-              <div style="display:flex; gap:8px">
-                <button class="btn small" style="background:${left}; color:#fff"
-                        onclick="toggleMaintenance(${t.id}, ${done})">${done?"↩️":"✅"}</button>
-                <button class="btn small danger" onclick="deleteMaintenance(${t.id})">Slett</button>
-              </div>
-            </div>
-          `;
-        }).join("")}
-      </div>
-    </div>
-  `;
-}
-
-function renderCalendar(){
-  const loading = state.loading.calendar ? `<span class="pill">Laster…</span>` : "";
-  const evs = state.data.calendar;
-
-  const today = new Date();
-  const todayKey = today.toISOString().slice(0,10);
-  const todays = evs.filter(e => (e.start_time||"").slice(0,10) === todayKey);
-
-  return `
-    <div>
-      <div style="display:flex; align-items:center; justify-content:space-between; gap:10px">
-        <h3 style="margin:0; font-weight:950">📅 Kalender</h3>
-        <div>${loading}</div>
-      </div>
-
-      <div class="sep"></div>
-
-      <div class="grid2" style="align-items:start">
-        <div>
-          <div class="badge" style="margin-bottom:10px">Legg til hendelse</div>
-          <input id="cal_title" class="field" placeholder="Tittel (f.eks. Fotballtrening)">
-          <div class="row" style="margin-top:10px">
-            <input id="cal_date" class="field" type="date" value="${todayKey}">
-            <input id="cal_time" class="field" type="time" value="18:00">
-          </div>
-          <div class="row" style="margin-top:10px; align-items:center">
-            <input id="cal_dur" class="field" type="number" min="15" step="15" value="60" style="max-width:140px">
-            <label class="badge" style="background:#11182708">
-              <input id="cal_allday" type="checkbox" style="transform:scale(1.2); margin-right:8px"> Heldag
-            </label>
-          </div>
-          <div class="row" style="margin-top:10px">
-            <button class="btn primary" onclick="addCalendar()">Legg til</button>
-            <button class="btn" style="background:#11182710; color:#111827" onclick="loadCalendar()">Oppdater</button>
-          </div>
-          <div class="muted" style="margin-top:8px; font-size:12px">
-            Tips: Heldag = starter 08:00. Varighet brukes for sluttid.
-          </div>
-        </div>
-
-        <div>
-          <div class="badge" style="margin-bottom:10px">I dag</div>
-          ${todays.length===0 ? `<div class="muted">Ingen hendelser i dag.</div>` : `
-            <div class="list">
-              ${todays.map(e=>{
-                const left = e.added_by_color || state.user.color;
-                return `
-                  <div class="item" style="border-left-color:${left}">
-                    <div style="flex:1">
-                      <div class="title">${escapeHtml(e.title)}</div>
-                      <div class="meta">
-                        <span style="color:${left}; font-weight:950">${escapeHtml(e.added_by||"")}</span>
-                        · ${fmtTimeOnly(e.start_time)}–${e.end_time?fmtTimeOnly(e.end_time):""}
-                      </div>
-                    </div>
-                    <button class="btn small danger" onclick="deleteCalendar(${e.id})">Slett</button>
-                  </div>
-                `;
-              }).join("")}
-            </div>
-          `}
-        </div>
-      </div>
-
-      <div class="sep"></div>
-
-      <div class="badge" style="margin-bottom:10px">Kommende</div>
-      <div class="list">
-        ${evs.length===0 ? `
-          <div class="item" style="border-left-color:${state.user.color}">
-            <div>
-              <div class="title">Ingen kalenderhendelser</div>
-              <div class="meta">Legg til en hendelse over 👆</div>
-            </div>
-          </div>
-        ` : evs.slice(0,25).map(e=>{
-          const left = e.added_by_color || state.user.color;
-          return `
-            <div class="item" style="border-left-color:${left}">
-              <div style="flex:1">
-                <div class="title">${escapeHtml(e.title)}</div>
-                <div class="meta">
-                  <span style="color:${left}; font-weight:950">${escapeHtml(e.added_by||"")}</span>
-                  · ${fmtDateOnly(e.start_time)} ${fmtTimeOnly(e.start_time)}
-                </div>
-              </div>
-              <button class="btn small danger" onclick="deleteCalendar(${e.id})">Slett</button>
-            </div>
-          `;
-        }).join("")}
-      </div>
-    </div>
-  `;
-}
-
-function renderAllowance(){
-  const loading = state.loading.allowance ? `<span class="pill">Laster…</span>` : "";
-  const chores = state.data.chores;
-  const workers = state.data.workers;
-
-  const childStats = USERS.filter(u=>u.role==="child").map(u=>{
-    const s = calcStatsForChild(u.name);
-    return { ...u, ...s };
+async function approveProposal(task){
+  if(!isParent()) return toast("Kun foreldre kan godkjenne forslag", "warn");
+  await sb(`chore_tasks?id=eq.${task.id}`, {
+    method:"PATCH",
+    body: { status:"available", approved_by: state.user.name, approved_at: nowISO() }
   });
+  toast("Forslag godkjent", "good");
+  await refresh();
+}
+async function rejectProposal(task){
+  if(!isParent()) return toast("Kun foreldre kan avvise forslag", "warn");
+  await sb(`chore_tasks?id=eq.${task.id}`, {
+    method:"PATCH",
+    body: { status:"rejected", approved_by: state.user.name, approved_at: nowISO() }
+  });
+  toast("Forslag avvist", "warn");
+  await refresh();
+}
 
-  const available = chores.filter(c=>c.status==="available");
-  const inprog = chores.filter(c=>c.status==="in_progress");
-  const completed = chores.filter(c=>c.status==="completed");
-  const approved = chores.filter(c=>c.status==="approved");
+async function takeTask(task){
+  if(!isChild()) return toast("Kun barn kan ta oppgaver", "warn");
+  // Lag worker-rad
+  const worker = {
+    task_id: task.id,
+    worker_name: state.user.name,
+    worker_color: state.user.color,
+    percentage: 100,
+    confirmed: true,
+    started_at: nowISO()
+  };
+  await sb(`chore_workers`, { method:"POST", body: worker });
+  // Oppdater status på task (valgfritt men ryddig)
+  await sb(`chore_tasks?id=eq.${task.id}`, { method:"PATCH", body: { status:"assigned" } });
+  toast("Oppgave tatt", "good");
+  await refresh();
+}
 
-  function renderTaskCard(t){
-    const left = t.created_by_color || "#11182755";
-    const w = workers.find(x=>x.task_id===t.id);
-    const assignee = w ? `${w.worker_name}` : "";
-    const status = choreStatusLabel(t.status);
-    const canTake = (!isParent() && t.status==="available");
-    const canComplete = (!isParent() && t.status==="in_progress" && w && w.worker_name===state.user.name);
-    const canApprove = (isParent() && t.status==="completed");
+async function completeMyWork(worker){
+  if(!isChild()) return toast("Kun barn kan fullføre", "warn");
+  if(worker.worker_name !== state.user.name) return toast("Dette er ikke din oppgave", "warn");
+  await sb(`chore_workers?id=eq.${worker.id}`, { method:"PATCH", body: { completed_at: nowISO() } });
+  await sb(`chore_tasks?id=eq.${worker.task_id}`, { method:"PATCH", body: { status:"completed" } });
+  toast("Fullført – venter på godkjenning", "warn");
+  await refresh();
+}
 
-    return `
-      <div class="item" style="border-left-color:${left}">
-        <div style="flex:1">
-          <div class="title">${escapeHtml(t.title)} <span class="pill">${t.amount} kr</span></div>
-          <div class="meta">
-            <span style="color:${left}; font-weight:950">${escapeHtml(t.created_by||"")}</span>
-            · ${escapeHtml(status)}
-            ${assignee ? `· <span style="font-weight:950; color:${w.worker_color||"#111827"}">${escapeHtml(assignee)}</span>` : ""}
+async function approveWork(worker){
+  if(!isParent()) return toast("Kun foreldre kan godkjenne", "warn");
+  // Finn task (for beløp)
+  const task = state.data.choresTasks.find(t => t.id === worker.task_id);
+  if(!task) return toast("Fant ikke oppgaven", "bad");
+  const earned = Math.round((task.amount || 0) * ((worker.percentage||100)/100));
+  await sb(`chore_workers?id=eq.${worker.id}`, {
+    method:"PATCH",
+    body: { approved_at: nowISO(), approved_by: state.user.name, earned_amount: earned }
+  });
+  await sb(`chore_tasks?id=eq.${worker.task_id}`, { method:"PATCH", body: { status:"approved" } });
+  toast("Godkjent ✅", "good");
+  await refresh();
+}
+
+async function rejectWork(worker){
+  if(!isParent()) return toast("Kun foreldre kan avvise", "warn");
+  await sb(`chore_workers?id=eq.${worker.id}`, {
+    method:"PATCH",
+    body: { rejected_at: nowISO(), rejected_by: state.user.name }
+  });
+  await sb(`chore_tasks?id=eq.${worker.task_id}`, { method:"PATCH", body: { status:"available" } });
+  toast("Avvist – tilbake til tilgjengelig", "warn");
+  await refresh();
+}
+
+/* ============================================================
+   RENDER
+   ============================================================ */
+function render(){
+  if(!state.user){
+    appEl.innerHTML = `
+      <div class="top">
+        <div class="topL">
+          <div class="avatar">👨‍👩‍👧‍👦</div>
+          <div>
+            <p class="h1">Familietid</p>
+            <p class="sub">Velg bruker</p>
           </div>
         </div>
-        <div style="display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end">
-          ${canTake ? `<button class="btn small ok" onclick="takeTask(${t.id})">Ta</button>` : ""}
-          ${canComplete ? `<button class="btn small" style="background:${state.user.color}; color:#fff" onclick="completeTask(${t.id})">Fullfør</button>` : ""}
-          ${canApprove ? `<button class="btn small ok" onclick="approveTask(${t.id})">Godkjenn</button>` : ""}
+        <span class="pill"><span class="dot" style="background:${state.loading? "var(--warn)":"var(--good)"}"></span>${state.loading?"Laster…":"Klar"}</span>
+      </div>
+      <div class="content">
+        <div class="grid2">
+          ${USERS.map(u=>`
+            <button class="btn" onclick="selectUser('${u.name}')"
+              style="display:flex;justify-content:space-between;align-items:center;padding:16px;border-radius:18px;">
+              <span style="display:flex;gap:12px;align-items:center">
+                <span style="width:40px;height:40px;border-radius:14px;display:grid;place-items:center;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);font-size:20px">${u.emoji}</span>
+                <span style="text-align:left">
+                  <div style="font-weight:950">${escapeHtml(u.name)}</div>
+                  <div class="muted" style="font-size:12px">${u.role==="parent"?"Forelder":"Barn"}</div>
+                </span>
+              </span>
+              <span class="chip" style="border-color:${u.color}55">${u.color}</span>
+            </button>
+          `).join("")}
         </div>
       </div>
     `;
+    return;
   }
 
-  return `
-    <div>
-      <div style="display:flex; align-items:center; justify-content:space-between; gap:10px">
-        <h3 style="margin:0; font-weight:950">💰 Ukelønn</h3>
-        <div>${loading}</div>
-      </div>
-
-      <div class="sep"></div>
-
-      <div class="grid2">
-        <div>
-          <div class="badge" style="margin-bottom:10px">Statistikk (godkjent)</div>
-          <div class="list">
-            ${childStats.map(s=>`
-              <div class="item" style="border-left-color:${s.color}">
-                <div style="flex:1">
-                  <div class="title">${s.emoji} ${escapeHtml(s.name)}</div>
-                  <div class="meta">Godkjente: <b>${s.approvedCount}</b> · Sum: <b>${s.sum} kr</b> · Venter: <b>${s.pending}</b></div>
-                </div>
-              </div>
-            `).join("")}
-          </div>
-          <div class="muted" style="font-size:12px; margin-top:8px">
-            “Sum” øker når forelder trykker “Godkjenn”.
-          </div>
-        </div>
-
-        <div>
-          <div class="badge" style="margin-bottom:10px">Opprett oppgave</div>
-          ${isParent() ? `
-            <input id="ch_title" class="field" placeholder="Oppgavetittel (f.eks. Vaske badet)">
-            <div class="row" style="margin-top:10px">
-              <input id="ch_amount" class="field" type="number" min="1" step="5" placeholder="Beløp (kr)">
-              <select id="ch_cat" class="field">
-                <option value="hjemme">Hjemme</option>
-                <option value="ute">Ute</option>
-                <option value="annet">Annet</option>
-              </select>
-            </div>
-            <div class="row" style="margin-top:10px">
-              <button class="btn primary" onclick="createChoreTask()">Opprett</button>
-              <button class="btn" style="background:#11182710; color:#111827" onclick="loadAllowance()">Oppdater</button>
-            </div>
-          ` : `
-            <div class="muted">Foreldre kan opprette oppgaver her.</div>
-            <div class="row" style="margin-top:10px">
-              <button class="btn" style="background:#11182710; color:#111827" onclick="loadAllowance()">Oppdater</button>
-            </div>
-          `}
-        </div>
-      </div>
-
-      <div class="sep"></div>
-
-      <div class="badge" style="margin-bottom:10px">Tilgjengelige oppgaver</div>
-      <div class="list">
-        ${available.length===0 ? `<div class="muted">Ingen tilgjengelige oppgaver akkurat nå.</div>` : available.map(renderTaskCard).join("")}
-      </div>
-
-      <div class="sep"></div>
-
-      <div class="badge" style="margin-bottom:10px">Pågår</div>
-      <div class="list">
-        ${inprog.length===0 ? `<div class="muted">Ingen oppgaver pågår.</div>` : inprog.map(renderTaskCard).join("")}
-      </div>
-
-      <div class="sep"></div>
-
-      <div class="badge" style="margin-bottom:10px">Utført (venter godkjenning)</div>
-      <div class="list">
-        ${completed.length===0 ? `<div class="muted">Ingen oppgaver venter på godkjenning.</div>` : completed.map(renderTaskCard).join("")}
-      </div>
-
-      <div class="sep"></div>
-
-      <div class="badge" style="margin-bottom:10px">Godkjent</div>
-      <div class="list">
-        ${approved.length===0 ? `<div class="muted">Ingen oppgaver er godkjent ennå.</div>` : approved.slice(0,12).map(renderTaskCard).join("")}
-      </div>
-    </div>
-  `;
-}
-
-function render(){
-  if(!state.user) return renderLogin();
+  const tab = state.tab;
+  const tabButtons = [
+    { id:"shopping", label:"Handleliste", icon:"🛒" },
+    { id:"allowance", label:"Ukelønn", icon:"💰" },
+  ];
 
   appEl.innerHTML = `
-    ${renderHeader()}
-    <div class="content">
-      ${renderTabs()}
-      <div class="card" style="padding:16px; border-radius:18px; box-shadow:none; background:#ffffffaa">
-        ${
-          state.tab==="shopping" ? renderShopping() :
-          state.tab==="calendar" ? renderCalendar() :
-          state.tab==="notes" ? renderNotes() :
-          state.tab==="maintenance" ? renderMaintenance() :
-          renderAllowance()
-        }
+    <div class="top">
+      <div class="topL">
+        <div class="avatar" style="border-color:${state.user.color}55">${state.user.emoji}</div>
+        <div>
+          <p class="h1">Hei, ${escapeHtml(state.user.name)}!</p>
+          <p class="sub">${state.user.role==="parent"?"Forelder":"Barn"} • Familietid</p>
+        </div>
       </div>
+      <div class="row" style="justify-content:flex-end">
+        <span class="pill"><span class="dot" style="background:${state.loading? "var(--warn)":"var(--good)"}"></span>${state.loading?"Laster…":"Online"}</span>
+        <button class="btn small" onclick="refresh()">Oppdater</button>
+        <button class="btn small" onclick="logout()">Bytt bruker</button>
+      </div>
+    </div>
 
-      <div class="muted" style="text-align:center; margin-top:14px; font-size:12px">
-        Familietid · statisk på Vercel · data i Supabase · <span style="font-weight:900">Ingen eksterne biblioteker</span>
-      </div>
+    <div class="tabs">
+      ${tabButtons.map(t=>`
+        <button class="tab ${tab===t.id?"active":""}" onclick="switchTab('${t.id}')">${t.icon} ${t.label}</button>
+      `).join("")}
+    </div>
+
+    <div class="content">
+      ${tab==="shopping" ? renderShopping() : ""}
+      ${tab==="allowance" ? renderAllowance() : ""}
     </div>
   `;
 }
 
 /* ============================================================
- *  App flow
- * ============================================================ */
+   SHOPPING UI
+   ============================================================ */
+function renderShopping(){
+  const items = state.data.shopping;
+  return `
+    <div class="panel">
+      <p class="title">🛒 Handleliste</p>
+      <div class="row">
+        <input class="field" id="shopText" placeholder="Hva skal kjøpes?" />
+        <input class="field" id="shopQty" type="number" min="1" value="1" style="max-width:120px" />
+        <button class="btn primary" onclick="uiAddShopping()">Legg til</button>
+      </div>
+
+      <div class="list">
+        ${items.length===0 ? `<div class="muted">Ingen varer enda.</div>` : items.map(i=>`
+          <div class="item">
+            <div class="itL">
+              <div class="itT">${i.checked ? "✅ " : ""}${escapeHtml(i.text)} <span class="muted">x${i.quantity||1}</span></div>
+              <div class="itM">
+                <span style="color:${escapeHtml(i.added_by_color)};font-weight:950">${escapeHtml(i.added_by)}</span>
+                • ${fmtShort(i.timestamp)}
+              </div>
+            </div>
+            <div class="itR">
+              <button class="btn small ${i.checked?"good":"primary"}" onclick='toggleShopping(${JSON.stringify(i)})'>${i.checked?"Ukjøpt":"Kjøpt"}</button>
+              <button class="btn small bad" onclick='deleteShopping(${JSON.stringify(i)})'>Slett</button>
+            </div>
+          </div>
+        `).join("")}
+      </div>
+    </div>
+  `;
+}
+function uiAddShopping(){
+  const text = document.getElementById("shopText").value;
+  const qty = document.getElementById("shopQty").value;
+  addShopping(text, qty).catch(e=>toast("Kunne ikke legge til: " + e.message, "bad"));
+  document.getElementById("shopText").value="";
+  document.getElementById("shopQty").value="1";
+}
+
+/* ============================================================
+   ALLOWANCE UI (barn forslag + velg oppgaver + ukestatistikk)
+   ============================================================ */
+function renderAllowance(){
+  const user = state.user;
+  const tasks = state.data.choresTasks;
+  const workers = state.data.choresWorkers;
+  const weekly = state.data.weekly;
+
+  const proposed = tasks.filter(t => t.status==="proposed" && t.proposed_by_child===true);
+  const available = tasks.filter(t => t.status==="available");
+  const assigned = tasks.filter(t => t.status==="assigned");
+  const completedWorkers = workers.filter(w => w.completed_at && !w.approved_at && !w.rejected_at);
+  const myWorkers = workers.filter(w => w.worker_name===user.name && !w.rejected_at);
+  const myActive = myWorkers.filter(w => !w.completed_at && !w.approved_at);
+  const myDoneWaiting = myWorkers.filter(w => w.completed_at && !w.approved_at);
+
+  // Week picker
+  const weekKeys = Array.from(new Set(weekly.map(weekKeyFromRow)));
+  const currentKey = currentISOWeekKey();
+  let selectedKey = state.ui.weekKey;
+  if(selectedKey==="auto"){
+    selectedKey = weekKeys.includes(currentKey) ? currentKey : (weekKeys[0] || currentKey);
+  }
+  const selRows = weekly.filter(r => weekKeyFromRow(r)===selectedKey);
+  const children = USERS.filter(u=>u.role==="child");
+
+  return `
+    <div class="panel">
+      <div class="row" style="justify-content:space-between;align-items:flex-end">
+        <div>
+          <p class="title">💰 Ukelønn</p>
+          <div class="muted">Forslag → Godkjent forslag → Barn tar → Fullfører → Forelder godkjenner → Teller i uke-statistikk</div>
+        </div>
+        <div style="min-width:220px">
+          <div class="muted" style="margin-bottom:6px">Uke</div>
+          <select onchange="setWeek(this.value)">
+            <option value="auto" ${state.ui.weekKey==="auto"?"selected":""}>Auto (nå / siste)</option>
+            ${weekKeys.map(k=>`<option value="${k}" ${state.ui.weekKey===k?"selected":""}>${k}</option>`).join("")}
+          </select>
+        </div>
+      </div>
+
+      <div class="hr"></div>
+
+      <div class="grid3">
+        ${children.map(c=>{
+          const r = selRows.find(x=>x.worker_name===c.name);
+          const sum = r ? r.sum_earned : 0;
+          const cnt = r ? r.approved_tasks : 0;
+          return `
+            <div class="panel" style="background:rgba(255,255,255,.04)">
+              <div class="row" style="justify-content:space-between">
+                <div class="row" style="gap:10px">
+                  <div class="avatar" style="width:44px;height:44px;border-radius:14px;border-color:${c.color}55">${c.emoji}</div>
+                  <div>
+                    <div style="font-weight:950">${escapeHtml(c.name)}</div>
+                    <div class="muted" style="font-size:12px">${selectedKey}</div>
+                  </div>
+                </div>
+                <div class="chip" style="border-color:${c.color}55">${sum} kr</div>
+              </div>
+              <div class="kpi" style="margin-top:10px">
+                <span class="chip">Godkjent: ${cnt}</span>
+                <span class="chip">Sum: ${sum} kr</span>
+              </div>
+            </div>
+          `;
+        }).join("")}
+      </div>
+
+      <div class="hr"></div>
+
+      ${isChild() ? renderAllowanceChild({available, myActive, myDoneWaiting}) : ""}
+      ${isParent() ? renderAllowanceParent({proposed, available, assigned, completedWorkers, tasks, workers}) : ""}
+    </div>
+  `;
+}
+
+function renderAllowanceChild({available, myActive, myDoneWaiting}){
+  return `
+    <div class="grid2">
+      <div class="panel">
+        <p class="title">✅ Tilgjengelige oppgaver</p>
+        <div class="muted">Velg blant familieoppgaver (inkl. godkjente forslag)</div>
+
+        <div class="list">
+          ${available.length===0 ? `<div class="muted">Ingen tilgjengelige oppgaver akkurat nå.</div>` : available.slice(0,50).map(t=>`
+            <div class="item" style="border-left:6px solid ${escapeHtml(t.created_by_color)}">
+              <div class="itL">
+                <div class="itT">${escapeHtml(t.title)} <span class="muted">(${t.amount} kr)</span></div>
+                <div class="itM">Laget av <span style="color:${escapeHtml(t.created_by_color)};font-weight:950">${escapeHtml(t.created_by)}</span> • ${escapeHtml(t.category || "hjemme")}</div>
+              </div>
+              <div class="itR">
+                <button class="btn small primary" onclick='takeTask(${JSON.stringify(t)}).catch(e=>toast("Kunne ikke ta oppgave: "+e.message,"bad"))'>Ta</button>
+              </div>
+            </div>
+          `).join("")}
+        </div>
+      </div>
+
+      <div class="panel">
+        <p class="title">🧠 Foreslå oppgave</p>
+        <div class="muted">Barna kan foreslå – foreldre godkjenner før den blir tilgjengelig.</div>
+        <div class="hr"></div>
+        <div class="row">
+          <input class="field" id="pTitle" placeholder="Oppgavetittel (f.eks. Rydde rommet)" />
+          <input class="field" id="pAmount" type="number" min="0" placeholder="Beløp (kr)" style="max-width:160px" />
+          <select id="pCat" style="max-width:220px">
+            <option value="hjemme">Hjemme</option>
+            <option value="ute">Ute</option>
+            <option value="annet">Annet</option>
+          </select>
+          <button class="btn primary" onclick="uiProposeTask()">Send forslag</button>
+        </div>
+
+        <div class="hr"></div>
+
+        <p class="title">⏳ Mine oppgaver</p>
+        <div class="list">
+          ${myActive.length===0 ? `<div class="muted">Ingen aktive oppgaver.</div>` : myActive.map(w=>`
+            <div class="item">
+              <div class="itL">
+                <div class="itT">Oppgave #${w.task_id}</div>
+                <div class="itM">Startet: ${fmtShort(w.started_at)}</div>
+              </div>
+              <div class="itR">
+                <button class="btn small warn" onclick='completeMyWork(${JSON.stringify(w)}).catch(e=>toast("Kunne ikke fullføre: "+e.message,"bad"))'>Fullført</button>
+              </div>
+            </div>
+          `).join("")}
+
+          ${myDoneWaiting.length===0 ? `` : `
+            <div class="muted">Venter på godkjenning:</div>
+            ${myDoneWaiting.map(w=>`
+              <div class="item">
+                <div class="itL">
+                  <div class="itT">Oppgave #${w.task_id}</div>
+                  <div class="itM">Fullført: ${fmtShort(w.completed_at)}</div>
+                </div>
+                <div class="itR"><span class="chip">Venter</span></div>
+              </div>
+            `).join("")}
+          `}
+        </div>
+      </div>
+    </div>
+  `;
+}
+function uiProposeTask(){
+  const title = document.getElementById("pTitle").value;
+  const amount = document.getElementById("pAmount").value;
+  const category = document.getElementById("pCat").value;
+  proposeTask({title, amount, category}).catch(e=>toast("Kunne ikke foreslå: "+e.message,"bad"));
+  document.getElementById("pTitle").value="";
+  document.getElementById("pAmount").value="";
+}
+
+function renderAllowanceParent({proposed, available, assigned, completedWorkers, tasks, workers}){
+  return `
+    <div class="grid2">
+      <div class="panel">
+        <p class="title">🧾 Forslag fra barn</p>
+        <div class="muted">Oppgaver med status <code>proposed</code></div>
+
+        <div class="list">
+          ${proposed.length===0 ? `<div class="muted">Ingen forslag akkurat nå.</div>` : proposed.map(t=>`
+            <div class="item" style="border-left:6px solid ${escapeHtml(t.created_by_color)}">
+              <div class="itL">
+                <div class="itT">${escapeHtml(t.title)} <span class="muted">(${t.amount} kr)</span></div>
+                <div class="itM">Foreslått av <span style="color:${escapeHtml(t.created_by_color)};font-weight:950">${escapeHtml(t.created_by)}</span></div>
+              </div>
+              <div class="itR">
+                <button class="btn small good" onclick='approveProposal(${JSON.stringify(t)}).catch(e=>toast("Kunne ikke godkjenne: "+e.message,"bad"))'>Godkjenn</button>
+                <button class="btn small bad" onclick='rejectProposal(${JSON.stringify(t)}).catch(e=>toast("Kunne ikke avvise: "+e.message,"bad"))'>Avvis</button>
+              </div>
+            </div>
+          `).join("")}
+        </div>
+
+        <div class="hr"></div>
+
+        <p class="title">✅ Opprett familieoppgave</p>
+        <div class="row">
+          <input class="field" id="cTitle" placeholder="Oppgavetittel" />
+          <input class="field" id="cAmount" type="number" min="0" placeholder="Beløp (kr)" style="max-width:160px" />
+          <select id="cCat" style="max-width:220px">
+            <option value="hjemme">Hjemme</option>
+            <option value="ute">Ute</option>
+            <option value="annet">Annet</option>
+          </select>
+          <select id="cType" style="max-width:220px">
+            <option value="once">Engang</option>
+            <option value="weekly">Ukentlig</option>
+          </select>
+          <button class="btn primary" onclick="uiCreateFamilyTask()">Opprett</button>
+        </div>
+      </div>
+
+      <div class="panel">
+        <p class="title">⏳ Venter godkjenning (utført)</p>
+        <div class="muted">Workers med <code>completed_at</code> og uten <code>approved_at</code></div>
+
+        <div class="list">
+          ${completedWorkers.length===0 ? `<div class="muted">Ingen som venter på godkjenning nå.</div>` : completedWorkers.map(w=>{
+            const t = tasks.find(x=>x.id===w.task_id);
+            const amount = t ? t.amount : 0;
+            return `
+              <div class="item">
+                <div class="itL">
+                  <div class="itT">${t ? escapeHtml(t.title) : `Oppgave #${w.task_id}`} <span class="muted">(${amount} kr)</span></div>
+                  <div class="itM">Barn: <span style="color:${escapeHtml(w.worker_color)};font-weight:950">${escapeHtml(w.worker_name)}</span> • Fullført: ${fmtShort(w.completed_at)}</div>
+                </div>
+                <div class="itR">
+                  <button class="btn small good" onclick='approveWork(${JSON.stringify(w)}).catch(e=>toast("Kunne ikke godkjenne: "+e.message,"bad"))'>Godkjenn</button>
+                  <button class="btn small bad" onclick='rejectWork(${JSON.stringify(w)}).catch(e=>toast("Kunne ikke avvise: "+e.message,"bad"))'>Avvis</button>
+                </div>
+              </div>
+            `;
+          }).join("")}
+        </div>
+
+        <div class="hr"></div>
+
+        <p class="title">📌 Tilgjengelige oppgaver</p>
+        <div class="list">
+          ${available.length===0 ? `<div class="muted">Ingen tilgjengelige oppgaver.</div>` : available.slice(0,20).map(t=>`
+            <div class="item" style="border-left:6px solid ${escapeHtml(t.created_by_color)}">
+              <div class="itL">
+                <div class="itT">${escapeHtml(t.title)} <span class="muted">(${t.amount} kr)</span></div>
+                <div class="itM">Laget av ${escapeHtml(t.created_by)} • ${escapeHtml(t.category||"hjemme")}</div>
+              </div>
+              <div class="itR"><span class="chip">Tilgjengelig</span></div>
+            </div>
+          `).join("")}
+        </div>
+      </div>
+    </div>
+  `;
+}
+function uiCreateFamilyTask(){
+  const title = document.getElementById("cTitle").value;
+  const amount = document.getElementById("cAmount").value;
+  const category = document.getElementById("cCat").value;
+  const task_type = document.getElementById("cType").value;
+  createFamilyTask({title, amount, category, task_type}).catch(e=>toast("Kunne ikke opprette: "+e.message,"bad"));
+  document.getElementById("cTitle").value="";
+  document.getElementById("cAmount").value="";
+}
+
+/* ============================================================
+   NAV / SESSION
+   ============================================================ */
 function selectUser(name){
   const u = USERS.find(x=>x.name===name);
   if(!u) return;
   state.user = u;
-  localStorage.setItem(LS_KEY, name);
-  toast(`Velkommen, ${u.name}!`);
-  // last tabens data først (rask følelse av respons)
-  switchTab(state.tab, true);
+  localStorage.setItem(LS_USER, name);
+  refresh().catch(e=>toast("Kunne ikke laste data: "+e.message,"bad"));
+  render();
 }
-
 function logout(){
+  localStorage.removeItem(LS_USER);
   state.user = null;
-  localStorage.removeItem(LS_KEY);
   state.tab = "shopping";
-  toast("Byttet bruker", "success");
+  render();
+}
+function switchTab(id){
+  state.tab = id;
+  render();
+}
+function setWeek(val){
+  state.ui.weekKey = val;
   render();
 }
 
-function switchTab(tab, silent=false){
-  state.tab = tab;
-  render();
-
-  // last data for valgt fane (hvis ikke lastet)
-  if(tab==="shopping") loadShopping();
-  if(tab==="calendar") loadCalendar();
-  if(tab==="notes") loadNotes();
-  if(tab==="maintenance") loadMaintenance();
-  if(tab==="allowance") loadAllowance();
-
-  if(!silent) hideToast();
-}
-
 /* ============================================================
- *  Expose functions to window (for onclick handlers)
- * ============================================================ */
-window.selectUser = selectUser;
-window.logout = logout;
-window.switchTab = switchTab;
-
-window.addShopping = addShopping;
-window.toggleShopping = toggleShopping;
-window.deleteShopping = deleteShopping;
-
-window.addNote = addNote;
-window.deleteNote = deleteNote;
-
-window.addMaintenance = addMaintenance;
-window.toggleMaintenance = toggleMaintenance;
-window.deleteMaintenance = deleteMaintenance;
-
-window.addCalendar = addCalendar;
-window.deleteCalendar = deleteCalendar;
-
-window.createChoreTask = createChoreTask;
-window.takeTask = takeTask;
-window.completeTask = completeTask;
-window.approveTask = approveTask;
-
-/* ============================================================
- *  Init
- * ============================================================ */
-(function init(){
-  // render UI med en gang
+   REFRESH
+   ============================================================ */
+async function refresh(full=true){
+  state.loading = true;
   render();
-
-  // auto-login hvis valgt før
-  const saved = localStorage.getItem(LS_KEY);
-  if(saved && USERS.some(u=>u.name===saved)){
-    selectUser(saved);
-  }
-
-  // prøv å sjekke “online” i bakgrunn
-  (async()=>{
-    try{
-      // lett ping: hent 1 rad fra shopping (eller tom)
-      await sb("shopping_items", { query:{ select:"id", limit:"1" } });
-      setOnlineFlag(true);
-    }catch(e){
-      setOnlineFlag(false);
-    }finally{
-      render();
+  try{
+    if(full || state.tab==="shopping"){
+      state.data.shopping = await loadShopping();
     }
-  })();
+    if(full || state.tab==="allowance"){
+      const {tasks, workers, weekly} = await loadChores();
+      state.data.choresTasks = tasks || [];
+      state.data.choresWorkers = workers || [];
+      state.data.weekly = weekly || [];
+    }
+  }catch(e){
+    toast(e.message || "Noe gikk galt", "bad");
+  }finally{
+    state.loading = false;
+    render();
+  }
+}
+
+/* ============================================================
+   BOOT
+   ============================================================ */
+(function boot(){
+  const saved = localStorage.getItem(LS_USER);
+  if(saved){
+    const u = USERS.find(x=>x.name===saved);
+    if(u) state.user = u;
+  }
+  render();
+  if(state.user) refresh().catch(()=>{});
 })();
 </script>
 </body>
