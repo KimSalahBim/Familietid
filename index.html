@@ -1,715 +1,1324 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="no">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>👨‍👩‍👧‍👦 Vår Familie - Familieapp</title>
-    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&family=Fredoka:wght@600&display=swap" rel="stylesheet">
-    <style>
-        /* RESET & BASE */
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { 
-            font-family: 'Quicksand', sans-serif; 
-            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
-            min-height: 100vh;
-            padding: 20px;
-        }
-        
-        /* TOAST */
-        .toast {
-            position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
-            background: #4CAF50; color: white; padding: 14px 28px;
-            border-radius: 10px; box-shadow: 0 6px 20px rgba(0,0,0,0.2);
-            z-index: 10000; font-weight: 700; display: flex;
-            align-items: center; gap: 10px; animation: fadeIn 0.3s ease;
-            font-size: 16px; max-width: 90%; text-align: center;
-            cursor: pointer;
-        }
-        .toast.error { background: #f44336; }
-        .toast.warning { background: #FF9800; }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateX(-50%) translateY(-30px); }
-            to { opacity: 1; transform: translateX(-50%) translateY(0); }
-        }
-        
-        /* MOBILE */
-        @media (max-width: 768px) {
-            .btn { padding: 16px !important; min-height: 44px; }
-            input, textarea { font-size: 16px !important; padding: 12px !important; }
-            .tab { min-width: 130px; padding: 14px 10px !important; font-size: 14px !important; }
-        }
-        
-        /* CALENDAR */
-        .calendar-grid {
-            display: grid; grid-template-columns: repeat(7, 1fr); gap: 1px;
-            background: #e0e0e0; border: 1px solid #e0e0e0;
-        }
-        .calendar-day {
-            background: white; min-height: 100px; padding: 8px;
-        }
-        .calendar-event {
-            background: #e3f2fd; border-left: 4px solid #2196F3;
-            padding: 6px 8px; margin: 4px 0; border-radius: 4px;
-            font-size: 12px;
-        }
-    </style>
-</head>
-<body>
-    <div id="app">
-        <!-- App loads here -->
-    </div>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Familietid</title>
+  <style>
+    :root{
+      --bg1:#ffecd2; --bg2:#fcb69f;
+      --card:#fff; --text:#111827; --muted:#6b7280;
+      --shadow: 0 10px 30px rgba(0,0,0,.12);
+      --radius:22px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: system-ui,-apple-system,Segoe UI,Roboto,Arial;
+      background: linear-gradient(135deg,var(--bg1),var(--bg2));
+      color:var(--text);
+      padding:14px;
+    }
+    .wrap{max-width:920px;margin:0 auto}
+    .card{background:var(--card); border-radius:var(--radius); box-shadow:var(--shadow)}
+    .top{
+      display:flex; justify-content:space-between; align-items:center; gap:12px;
+      padding:18px;
+      border-radius:var(--radius);
+      color:#fff;
+    }
+    .topL{display:flex; align-items:center; gap:14px}
+    .emoji{font-size:40px; line-height:1}
+    .h1{margin:0; font-weight:900; font-size:20px}
+    .sub{margin:2px 0 0 0; opacity:.9; font-size:13px}
+    .btn{
+      border:0; cursor:pointer; font-weight:900;
+      border-radius:14px; padding:12px 14px;
+      user-select:none;
+    }
+    .btn.ghost{background:rgba(255,255,255,.18); color:#fff; border:2px solid rgba(255,255,255,.35)}
+    .btn.primary{background:#111827; color:#fff}
+    .btn.danger{background:#ef4444; color:#fff}
+    .btn.ok{background:#16a34a; color:#fff}
+    .btn.small{padding:10px 12px; border-radius:12px; font-weight:900}
+    .tabs{display:flex; flex-wrap:wrap; gap:10px; margin:14px 0}
+    .tab{
+      flex:1; min-width:145px;
+      padding:14px 12px;
+      border-radius:16px;
+      background:#fff;
+      color:#111827;
+      border:3px solid transparent;
+      font-weight:900;
+      cursor:pointer;
+    }
+    .tab.active{color:#fff}
+    .content{padding:18px}
+    .row{display:flex; gap:10px; flex-wrap:wrap}
+    .field{
+      width:100%;
+      border:2px solid #e5e7eb;
+      border-radius:14px;
+      padding:12px 12px;
+      font-size:16px;
+      outline:none;
+    }
+    .field:focus{border-color:#11182733}
+    .pill{
+      display:inline-block;
+      padding:4px 10px;
+      border-radius:999px;
+      font-size:12px;
+      font-weight:900;
+      background:#11182710;
+      color:#111827;
+    }
+    .list{display:flex; flex-direction:column; gap:10px; margin-top:12px}
+    .item{
+      background:#f8fafc;
+      border-radius:16px;
+      padding:14px;
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:10px;
+      border-left:6px solid #11182733;
+    }
+    .item .title{font-weight:900; font-size:16px}
+    .meta{color:var(--muted); font-size:12px; margin-top:4px}
+    .muted{color:var(--muted)}
+    .grid2{display:grid; grid-template-columns:1fr 1fr; gap:10px}
+    @media (max-width:780px){
+      body{padding:10px}
+      .btn{padding:16px 14px}
+      .tab{min-width:130px}
+      .grid2{grid-template-columns:1fr}
+      .content{padding:14px}
+    }
 
-    <script>
-        // ==================== APP STATE ====================
-        let state = {
-            currentUser: null,
-            activeTab: 'shopping',
-            shoppingItems: [],
-            calendarEvents: [],
-            notes: [],
-            maintenanceTasks: [],
-            choreTasks: [],
-            isLoading: false,
-            calendarView: 'month', // 'day', 'week', 'month'
-            currentDate: new Date()
-        };
-        
-        // ==================== DEMO DATA ====================
-        const USERS = [
-            { name: 'Emmie', emoji: '🌸', color: '#ff6b9d' },
-            { name: 'Thelma', emoji: '🦋', color: '#c471ed' },
-            { name: 'Elea', emoji: '🌟', color: '#f9ca24' },
-            { name: 'Katrine', emoji: '🌺', color: '#ff7979' },
-            { name: 'Kim Rune', emoji: '⚡', color: '#4a90e2' }
-        ];
-        
-        // Initialize with demo data
-        function initDemoData() {
-            state.shoppingItems = [
-                { id: 1, text: 'Melk', quantity: 2, checked: false, added_by: 'Emmie', added_by_color: '#ff6b9d', timestamp: new Date(Date.now() - 3600000) },
-                { id: 2, text: 'Brød', quantity: 1, checked: true, added_by: 'Kim Rune', added_by_color: '#4a90e2', timestamp: new Date(Date.now() - 7200000) },
-                { id: 3, text: 'Egg', quantity: 12, checked: false, added_by: 'Thelma', added_by_color: '#c471ed', timestamp: new Date(Date.now() - 10800000) }
-            ];
-            
-            state.calendarEvents = [
-                { id: 1, title: 'Fotballtrening', date: new Date().toISOString().split('T')[0], time: '17:00', duration: 90, color: '#4CAF50', added_by: 'Emmie' },
-                { id: 2, title: 'Familiemiddag', date: new Date(Date.now() + 86400000).toISOString().split('T')[0], time: '18:30', duration: 120, color: '#FF9800', added_by: 'Katrine' }
-            ];
-            
-            state.notes = [
-                { id: 1, text: 'Husk å bestille hundefôr', added_by: 'Kim Rune', added_by_color: '#4a90e2', timestamp: new Date(Date.now() - 86400000) },
-                { id: 2, text: 'Bursdag: Bestemor på lørdag!', added_by: 'Emmie', added_by_color: '#ff6b9d', timestamp: new Date(Date.now() - 172800000) }
-            ];
-            
-            state.maintenanceTasks = [
-                { id: 1, text: 'Skifte lyspære på kjøkkenet', completed: false, priority: 1, added_by: 'Kim Rune', added_by_color: '#4a90e2' },
-                { id: 2, text: 'Måke blader i hagen', completed: true, priority: 2, added_by: 'Thelma', added_by_color: '#c471ed' },
-                { id: 3, text: 'Vaske vinduer', completed: false, priority: 3, added_by: 'Katrine', added_by_color: '#ff7979' }
-            ];
-            
-            state.choreTasks = [
-                { id: 1, title: 'Vaske badet', amount: 50, status: 'available', created_by: 'Katrine', task_type: 'once', category: 'hjemme' },
-                { id: 2, title: 'Rydde garasjen', amount: 100, status: 'completed', created_by: 'Kim Rune', task_type: 'once', category: 'ute' }
-            ];
+    /* Toast */
+    .toast{
+      position:fixed; top:16px; left:50%; transform:translateX(-50%);
+      background:#111827;
+      color:#fff;
+      padding:12px 16px;
+      border-radius:14px;
+      box-shadow:0 12px 30px rgba(0,0,0,.25);
+      z-index:9999;
+      display:flex; gap:10px; align-items:center;
+      font-weight:900;
+      max-width:min(780px,92vw);
+      cursor:pointer;
+      opacity:0; transition:opacity .18s ease, transform .18s ease;
+    }
+    .toast.show{opacity:1; transform:translateX(-50%) translateY(0)}
+    .toast.success{background:#16a34a}
+    .toast.warn{background:#f59e0b}
+    .toast.error{background:#ef4444}
+    .toast .hint{opacity:.9; font-weight:800; font-size:12px}
+    .sep{height:1px; background:#e5e7eb; margin:14px 0}
+    .badge{
+      display:inline-flex; align-items:center; gap:8px;
+      background:#11182710;
+      padding:8px 10px;
+      border-radius:14px;
+      font-weight:900;
+      font-size:13px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <div id="app" class="card"></div>
+  </div>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+<script>
+/** ============================================================
+ *  Familietid – én-fil app (Supabase REST via fetch)
+ *  Ingen eksterne biblioteker, ingen “evig loading”.
+ *  ============================================================ */
+
+/* === Supabase (prefylt) === */
+const SUPABASE_URL = "https://tifhelbmaqoojqtqhzso.supabase.co";
+const SUPABASE_ANON_KEY =
+"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRpZmhlbGJtYXFvb2pxdHFoenNvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg0ODY5NTYsImV4cCI6MjA4NDA2Mjk1Nn0.WFMmeOZvEYL9AAoLRHFVx97b8hT9Z2us-iWAxAjv9Fg";
+
+/* === “Familiebrukere” === */
+const USERS = [
+  { name:"Emmie",   emoji:"🌸", color:"#ff6b9d", role:"child"  },
+  { name:"Thelma",  emoji:"🦋", color:"#c471ed", role:"child"  },
+  { name:"Elea",    emoji:"🌟", color:"#f9ca24", role:"child"  },
+  { name:"Katrine", emoji:"🌺", color:"#ff7979", role:"parent" },
+  { name:"Kim Rune",emoji:"⚡", color:"#4a90e2", role:"parent" },
+];
+
+const LS_KEY = "familietid_user";
+
+/* === App state === */
+const state = {
+  user: null,
+  tab: "shopping",
+  online: true,
+  loading: { shopping:false, calendar:false, notes:false, maintenance:false, allowance:false },
+  data: {
+    shopping: [],
+    calendar: [],
+    notes: [],
+    maintenance: [],
+    chores: [],
+    workers: [],
+  },
+  lastDeleted: null, // for undo
+};
+
+const appEl = document.getElementById("app");
+const toastEl = document.getElementById("toast");
+
+/* ============================================================
+ *  Helpers
+ * ============================================================ */
+function escapeHtml(s){
+  return (s ?? "").toString().replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
+}
+function fmtAgo(iso){
+  if(!iso) return "";
+  const d = new Date(iso);
+  const diff = Date.now() - d.getTime();
+  const m = Math.floor(diff/60000);
+  const h = Math.floor(diff/3600000);
+  const day = Math.floor(diff/86400000);
+  if(m < 1) return "akkurat nå";
+  if(m < 60) return `${m} min siden`;
+  if(h < 24) return `${h} t siden`;
+  return d.toLocaleString("no-NO", { day:"2-digit", month:"short", hour:"2-digit", minute:"2-digit" });
+}
+function fmtDateOnly(iso){
+  const d = new Date(iso);
+  return d.toLocaleDateString("no-NO", { weekday:"short", day:"2-digit", month:"short" });
+}
+function fmtTimeOnly(iso){
+  const d = new Date(iso);
+  return d.toLocaleTimeString("no-NO", { hour:"2-digit", minute:"2-digit" });
+}
+function isParent(){
+  return state.user?.role === "parent";
+}
+
+function toast(msg, type="success", hint=""){
+  toastEl.className = `toast ${type}`;
+  toastEl.innerHTML = `<div>${type==="success"?"✅":type==="warn"?"⚠️":"❌"}</div>
+                       <div><div>${escapeHtml(msg)}</div>${hint?`<div class="hint">${escapeHtml(hint)}</div>`:""}</div>`;
+  toastEl.onclick = () => {
+    if(state.lastDeleted){
+      undoLastDelete();
+    } else {
+      hideToast();
+    }
+  };
+  requestAnimationFrame(()=>{
+    toastEl.classList.add("show");
+  });
+  clearTimeout(toastEl._t);
+  toastEl._t = setTimeout(hideToast, 3300);
+}
+function hideToast(){ toastEl.classList.remove("show"); }
+
+function setOnlineFlag(ok){
+  state.online = ok;
+}
+
+/* ============================================================
+ *  Supabase REST wrapper
+ * ============================================================ */
+async function sb(path, { method="GET", query={}, body=null, prefer="return=representation" } = {}){
+  const url = new URL(`${SUPABASE_URL}/rest/v1/${path}`);
+  for(const [k,v] of Object.entries(query || {})){
+    url.searchParams.set(k, v);
+  }
+  const res = await fetch(url.toString(), {
+    method,
+    headers: {
+      "apikey": SUPABASE_ANON_KEY,
+      "Authorization": `Bearer ${SUPABASE_ANON_KEY}`,
+      "Content-Type": "application/json",
+      "Prefer": prefer,
+    },
+    body: body ? JSON.stringify(body) : undefined
+  });
+  if(!res.ok){
+    const text = await res.text().catch(()=> "");
+    throw new Error(`${res.status} ${res.statusText} :: ${text}`);
+  }
+  if(res.status === 204) return null;
+  return res.json();
+}
+
+/* ============================================================
+ *  Data loaders
+ * ============================================================ */
+async function loadShopping(){
+  state.loading.shopping = true; render();
+  try{
+    const rows = await sb("shopping_items", { query:{ select:"*", order:"timestamp.desc" } });
+    state.data.shopping = rows || [];
+    setOnlineFlag(true);
+  } catch(e){
+    console.error(e);
+    setOnlineFlag(false);
+    toast("Kunne ikke hente handleliste (offline?)", "warn", "Du kan fortsatt bruke appen – prøver igjen senere.");
+  } finally{
+    state.loading.shopping = false; render();
+  }
+}
+
+async function loadNotes(){
+  state.loading.notes = true; render();
+  try{
+    const rows = await sb("notes", { query:{ select:"*", order:"timestamp.desc" } });
+    state.data.notes = rows || [];
+    setOnlineFlag(true);
+  } catch(e){
+    console.error(e);
+    setOnlineFlag(false);
+    toast("Kunne ikke hente notater", "warn");
+  } finally{
+    state.loading.notes = false; render();
+  }
+}
+
+async function loadMaintenance(){
+  state.loading.maintenance = true; render();
+  try{
+    const rows = await sb("maintenance_tasks", { query:{ select:"*", order:"priority.asc" } });
+    state.data.maintenance = rows || [];
+    setOnlineFlag(true);
+  } catch(e){
+    console.error(e);
+    setOnlineFlag(false);
+    toast("Kunne ikke hente vedlikehold", "warn");
+  } finally{
+    state.loading.maintenance = false; render();
+  }
+}
+
+async function loadCalendar(){
+  state.loading.calendar = true; render();
+  try{
+    // Henter 120 dager frem + 30 dager tilbake (bredt nok for familiebruk)
+    const from = new Date(Date.now() - 30*86400000).toISOString();
+    const to   = new Date(Date.now() + 120*86400000).toISOString();
+    const rows = await sb("calendar_events", {
+      query:{
+        select:"*",
+        "start_time": `gte.${from}`,
+        "start_time": `gte.${from}`, // PostgREST bruker siste hvis du dobler – så vi gjør det i URL på annen måte under
+      }
+    });
+    // Over: begrensning i vår wrapper hvis samme key brukes to ganger.
+    // Løsning: hent alt sortert, og filter client-side.
+    // (Kalender-tabellen er normalt liten i familie-app.)
+    const all = await sb("calendar_events", { query:{ select:"*", order:"start_time.asc" } });
+    state.data.calendar = (all || []).filter(ev=>{
+      const t = new Date(ev.start_time).getTime();
+      return t >= (Date.now() - 30*86400000) && t <= (Date.now() + 120*86400000);
+    });
+    setOnlineFlag(true);
+  } catch(e){
+    console.error(e);
+    setOnlineFlag(false);
+    toast("Kunne ikke hente kalender", "warn");
+  } finally{
+    state.loading.calendar = false; render();
+  }
+}
+
+async function loadAllowance(){
+  state.loading.allowance = true; render();
+  try{
+    const chores = await sb("chore_tasks", { query:{ select:"*", order:"created_at.desc" } });
+    const workers = await sb("chore_workers", { query:{ select:"*", order:"started_at.desc" } });
+    state.data.chores = chores || [];
+    state.data.workers = workers || [];
+    setOnlineFlag(true);
+  } catch(e){
+    console.error(e);
+    setOnlineFlag(false);
+    toast("Kunne ikke hente ukelønn-data", "warn");
+  } finally{
+    state.loading.allowance = false; render();
+  }
+}
+
+/* ============================================================
+ *  Actions – Shopping
+ * ============================================================ */
+async function addShopping(){
+  const text = document.getElementById("shop_text").value.trim();
+  const qty  = parseInt(document.getElementById("shop_qty").value || "1", 10);
+  if(!text) return toast("Skriv inn en vare først", "warn");
+  try{
+    const row = await sb("shopping_items", {
+      method:"POST",
+      body:{
+        text,
+        quantity: isFinite(qty) && qty>0 ? qty : 1,
+        checked:false,
+        added_by: state.user.name,
+        added_by_color: state.user.color
+      }
+    });
+    // row kan være array eller object avhengig av prefer; vi bruker return=representation => array
+    const inserted = Array.isArray(row) ? row[0] : row;
+    if(inserted) state.data.shopping.unshift(inserted);
+    document.getElementById("shop_text").value = "";
+    document.getElementById("shop_qty").value = "1";
+    toast("Vare lagt til");
+    render();
+  } catch(e){
+    console.error(e);
+    toast("Kunne ikke lagre vare", "error", "Sjekk at RLS er av/policies tillater insert.");
+  }
+}
+
+async function toggleShopping(id, current){
+  try{
+    const row = await sb(`shopping_items?id=eq.${id}`, {
+      method:"PATCH",
+      body:{ checked: !current }
+    });
+    // update local
+    const idx = state.data.shopping.findIndex(x=>x.id===id);
+    if(idx>=0) state.data.shopping[idx].checked = !current;
+    render();
+  } catch(e){
+    console.error(e);
+    toast("Kunne ikke oppdatere vare", "error");
+  }
+}
+
+async function deleteShopping(id){
+  const item = state.data.shopping.find(x=>x.id===id);
+  if(!item) return;
+  state.lastDeleted = { type:"shopping", payload:item, when:Date.now() };
+  try{
+    await sb(`shopping_items?id=eq.${id}`, { method:"DELETE", prefer:"return=minimal" });
+    state.data.shopping = state.data.shopping.filter(x=>x.id!==id);
+    toast(`Slettet: ${item.text}`, "warn", "Klikk på toasten for å angre");
+    render();
+  } catch(e){
+    console.error(e);
+    state.lastDeleted = null;
+    toast("Kunne ikke slette", "error");
+  }
+}
+
+async function undoLastDelete(){
+  const d = state.lastDeleted;
+  if(!d) return;
+  // kun angre siste 20 sek
+  if(Date.now() - d.when > 20000){
+    state.lastDeleted = null;
+    return toast("For sent å angre", "warn");
+  }
+  try{
+    if(d.type === "shopping"){
+      const it = d.payload;
+      // re-insert (ny id)
+      const row = await sb("shopping_items", {
+        method:"POST",
+        body:{
+          text: it.text,
+          quantity: it.quantity ?? 1,
+          checked: it.checked ?? false,
+          added_by: it.added_by || state.user.name,
+          added_by_color: it.added_by_color || state.user.color
         }
-        
-        // ==================== UTILITIES ====================
-        function showToast(message, type = 'success') {
-            const existing = document.querySelector('.toast');
-            if (existing) existing.remove();
-            
-            const toast = document.createElement('div');
-            toast.className = `toast ${type}`;
-            toast.innerHTML = `
-                ${type === 'success' ? '✅' : type === 'error' ? '❌' : '⚠️'}
-                <span>${message}</span>
-            `;
-            document.body.appendChild(toast);
-            
-            setTimeout(() => {
-                if (toast.parentNode) toast.remove();
-            }, 3000);
-            
-            return toast;
-        }
-        
-        function formatDate(date) {
-            const d = new Date(date);
-            const now = new Date();
-            const diff = now - d;
-            const minutes = Math.floor(diff / 60000);
-            const hours = Math.floor(diff / 3600000);
-            
-            if (minutes < 1) return 'Akkurat nå';
-            if (minutes < 60) return `${minutes} min siden`;
-            if (hours < 24) return `${hours} timer siden`;
-            
-            return d.toLocaleDateString('no-NO', { 
-                day: 'numeric', 
-                month: 'short',
-                hour: '2-digit',
-                minute: '2-digit'
-            });
-        }
-        
-        // ==================== SHOPPING LIST ====================
-        function addShoppingItem(text, quantity = 1) {
-            if (!text.trim() || !state.currentUser) {
-                showToast('Skriv noe først!', 'warning');
-                return;
-            }
-            
-            const newItem = {
-                id: Date.now(),
-                text: text.trim(),
-                quantity: quantity,
-                checked: false,
-                added_by: state.currentUser.name,
-                added_by_color: state.currentUser.color,
-                timestamp: new Date().toISOString()
-            };
-            
-            state.shoppingItems = [newItem, ...state.shoppingItems];
-            showToast(`"${text}" lagt til! ✅`);
-            renderApp();
-        }
-        
-        function toggleShoppingItem(id) {
-            state.shoppingItems = state.shoppingItems.map(item => 
-                item.id === id ? { ...item, checked: !item.checked } : item
-            );
-            renderApp();
-        }
-        
-        function deleteShoppingItem(id) {
-            const item = state.shoppingItems.find(item => item.id === id);
-            if (!item) return;
-            
-            // Store for undo
-            window.lastDeletedItem = { type: 'shopping', data: item, id: id };
-            
-            state.shoppingItems = state.shoppingItems.filter(item => item.id !== id);
-            const toast = showToast(`"${item.text}" slettet - Klikk for å angre`, 'warning');
-            
-            toast.onclick = () => {
-                if (window.lastDeletedItem) {
-                    state.shoppingItems = [window.lastDeletedItem.data, ...state.shoppingItems];
-                    showToast('Angret! Varen er tilbake ✅');
-                    window.lastDeletedItem = null;
-                    renderApp();
-                }
-            };
-            
-            renderApp();
-        }
-        
-        // ==================== CALENDAR ====================
-        function addCalendarEvent(title, date, time, duration = 60, color = '#4CAF50') {
-            if (!title || !date || !time || !state.currentUser) return;
-            
-            const newEvent = {
-                id: Date.now(),
-                title: title,
-                date: date,
-                time: time,
-                duration: duration,
-                color: color,
-                added_by: state.currentUser.name
-            };
-            
-            state.calendarEvents = [...state.calendarEvents, newEvent];
-            showToast(`"${title}" lagt til i kalender! ✅`);
-            renderApp();
-        }
-        
-        function getEventsForDate(dateStr) {
-            return state.calendarEvents.filter(event => event.date === dateStr);
-        }
-        
-        // ==================== NOTES ====================
-        function addNote(text) {
-            if (!text.trim() || !state.currentUser) return;
-            
-            const newNote = {
-                id: Date.now(),
-                text: text.trim(),
-                added_by: state.currentUser.name,
-                added_by_color: state.currentUser.color,
-                timestamp: new Date().toISOString()
-            };
-            
-            state.notes = [newNote, ...state.notes];
-            showToast('Notat lagret! ✅');
-            renderApp();
-        }
-        
-        function deleteNote(id) {
-            state.notes = state.notes.filter(note => note.id !== id);
-            showToast('Notat slettet!');
-            renderApp();
-        }
-        
-        // ==================== MAINTENANCE ====================
-        function toggleMaintenanceTask(id) {
-            state.maintenanceTasks = state.maintenanceTasks.map(task =>
-                task.id === id ? { ...task, completed: !task.completed } : task
-            );
-            renderApp();
-        }
-        
-        // ==================== ALLOWANCE ====================
-        function getEmmieStats() {
-            // Simuler data for Emmie
-            const emmieTasks = state.choreTasks.filter(task => 
-                task.status === 'completed' || task.status === 'approved'
-            );
-            
-            return {
-                totalTasks: emmieTasks.length,
-                totalEarnings: emmieTasks.reduce((sum, task) => sum + (task.amount || 0), 0),
-                pendingTasks: state.choreTasks.filter(task => task.status === 'completed').length,
-                message: emmieTasks.length > 0 ? 
-                    'Flott jobb, Emmie! 💪' : 
-                    'Ingen oppgaver fullført ennå'
-            };
-        }
-        
-        function completeChoreTask(taskId) {
-            const task = state.choreTasks.find(t => t.id === taskId);
-            if (!task) return;
-            
-            task.status = 'completed';
-            showToast(`"${task.title}" fullført! Vent på godkjenning ⏳`);
-            renderApp();
-        }
-        
-        // ==================== CORE APP FUNCTIONS ====================
-        function selectUser(userName) {
-            const user = USERS.find(u => u.name === userName);
-            if (user) {
-                state.currentUser = user;
-                localStorage.setItem('familieapp_user', userName);
-                showToast(`Velkommen, ${userName}! ✅`);
-                initDemoData();
-                renderApp();
-            }
-        }
-        
-        function logout() {
-            state.currentUser = null;
-            localStorage.removeItem('familieapp_user');
-            renderApp();
-        }
-        
-        function switchTab(tab) {
-            state.activeTab = tab;
-            renderApp();
-        }
-        
-        // ==================== RENDERING ====================
-        function renderApp() {
-            const app = document.getElementById('app');
-            if (!app) return;
-            
-            if (!state.currentUser) {
-                renderLoginScreen(app);
-                return;
-            }
-            
-            renderMainApp(app);
-        }
-        
-        function renderLoginScreen(app) {
-            app.innerHTML = `
-                <div style="max-width: 500px; margin: 40px auto; padding: 30px; background: white; 
-                           border-radius: 25px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); text-align: center;">
-                    <h1 style="font-size: 2.5rem; margin-bottom: 10px;">👨‍👩‍👧‍👦</h1>
-                    <h2 style="margin-bottom: 30px; color: #333; font-family: 'Fredoka', sans-serif;">
-                        Velkommen til Familieappen!
-                    </h2>
-                    <p style="margin-bottom: 30px; color: #666;">Hvem vil du logge inn som?</p>
-                    
-                    <div style="display: flex; flex-direction: column; gap: 15px;">
-                        ${USERS.map(user => `
-                            <button onclick="selectUser('${user.name}')" class="btn"
-                                style="background: white; border: 3px solid ${user.color}; border-radius: 20px;
-                                       color: ${user.color}; font-weight: 700; cursor: pointer; display: flex;
-                                       align-items: center; justify-content: center; gap: 15px; padding: 20px;
-                                       font-size: 1.2rem;">
-                                <span style="font-size: 1.8rem;">${user.emoji}</span>
-                                <span>${user.name}</span>
-                            </button>
-                        `).join('')}
-                    </div>
+      });
+      const inserted = Array.isArray(row) ? row[0] : row;
+      if(inserted) state.data.shopping.unshift(inserted);
+      state.lastDeleted = null;
+      toast("Angret – varen er tilbake");
+      render();
+      return;
+    }
+  } catch(e){
+    console.error(e);
+    toast("Kunne ikke angre", "error");
+  } finally{
+    state.lastDeleted = null;
+  }
+}
+
+/* ============================================================
+ *  Actions – Notes
+ * ============================================================ */
+async function addNote(){
+  const txt = document.getElementById("note_text").value.trim();
+  if(!txt) return toast("Skriv et notat først", "warn");
+  try{
+    const row = await sb("notes", {
+      method:"POST",
+      body:{
+        text: txt,
+        added_by: state.user.name,
+        added_by_color: state.user.color
+      }
+    });
+    const inserted = Array.isArray(row) ? row[0] : row;
+    if(inserted) state.data.notes.unshift(inserted);
+    document.getElementById("note_text").value = "";
+    toast("Notat lagret");
+    render();
+  } catch(e){
+    console.error(e);
+    toast("Kunne ikke lagre notat", "error");
+  }
+}
+async function deleteNote(id){
+  try{
+    await sb(`notes?id=eq.${id}`, { method:"DELETE", prefer:"return=minimal" });
+    state.data.notes = state.data.notes.filter(n=>n.id!==id);
+    toast("Notat slettet");
+    render();
+  } catch(e){
+    console.error(e);
+    toast("Kunne ikke slette notat", "error");
+  }
+}
+
+/* ============================================================
+ *  Actions – Maintenance
+ * ============================================================ */
+async function addMaintenance(){
+  const txt = document.getElementById("maint_text").value.trim();
+  if(!txt) return toast("Skriv en oppgave først", "warn");
+  const maxP = state.data.maintenance.reduce((m,x)=>Math.max(m, x.priority||0), 0);
+  try{
+    const row = await sb("maintenance_tasks", {
+      method:"POST",
+      body:{
+        text: txt,
+        completed:false,
+        priority: maxP+1,
+        added_by: state.user.name,
+        added_by_color: state.user.color
+      }
+    });
+    const inserted = Array.isArray(row) ? row[0] : row;
+    if(inserted) state.data.maintenance.push(inserted);
+    document.getElementById("maint_text").value = "";
+    toast("Vedlikehold lagt til");
+    render();
+  } catch(e){
+    console.error(e);
+    toast("Kunne ikke lagre vedlikehold", "error");
+  }
+}
+async function toggleMaintenance(id, current){
+  try{
+    await sb(`maintenance_tasks?id=eq.${id}`, { method:"PATCH", body:{ completed: !current } });
+    const idx = state.data.maintenance.findIndex(x=>x.id===id);
+    if(idx>=0) state.data.maintenance[idx].completed = !current;
+    toast(!current ? "Markert som ferdig" : "Åpnet igjen");
+    render();
+  } catch(e){
+    console.error(e);
+    toast("Kunne ikke oppdatere", "error");
+  }
+}
+async function deleteMaintenance(id){
+  try{
+    await sb(`maintenance_tasks?id=eq.${id}`, { method:"DELETE", prefer:"return=minimal" });
+    state.data.maintenance = state.data.maintenance.filter(x=>x.id!==id);
+    toast("Slettet");
+    render();
+  } catch(e){
+    console.error(e);
+    toast("Kunne ikke slette", "error");
+  }
+}
+
+/* ============================================================
+ *  Actions – Calendar
+ * ============================================================ */
+async function addCalendar(){
+  const title = document.getElementById("cal_title").value.trim();
+  const date  = document.getElementById("cal_date").value;
+  const time  = document.getElementById("cal_time").value;
+  const dur   = parseInt(document.getElementById("cal_dur").value || "60", 10);
+  const allDay= document.getElementById("cal_allday").checked;
+
+  if(!title) return toast("Skriv inn tittel", "warn");
+  if(!date) return toast("Velg dato", "warn");
+
+  let start;
+  if(allDay){
+    // all-day: start 08:00 local
+    start = new Date(`${date}T08:00:00`);
+  } else {
+    if(!time) return toast("Velg tidspunkt", "warn");
+    start = new Date(`${date}T${time}:00`);
+  }
+  const startIso = start.toISOString();
+  const endIso = new Date(start.getTime() + (isFinite(dur)?dur:60)*60000).toISOString();
+
+  try{
+    const row = await sb("calendar_events", {
+      method:"POST",
+      body:{
+        title,
+        start_time: startIso,
+        end_time: endIso,
+        duration: isFinite(dur)?dur:60,
+        all_day: !!allDay,
+        added_by: state.user.name,
+        added_by_color: state.user.color
+      }
+    });
+    const inserted = Array.isArray(row) ? row[0] : row;
+    if(inserted){
+      state.data.calendar.push(inserted);
+      state.data.calendar.sort((a,b)=>new Date(a.start_time)-new Date(b.start_time));
+    }
+    document.getElementById("cal_title").value = "";
+    toast("Hendelse lagt til");
+    render();
+  } catch(e){
+    console.error(e);
+    toast("Kunne ikke lagre kalenderhendelse", "error");
+  }
+}
+
+async function deleteCalendar(id){
+  try{
+    await sb(`calendar_events?id=eq.${id}`, { method:"DELETE", prefer:"return=minimal" });
+    state.data.calendar = state.data.calendar.filter(x=>x.id!==id);
+    toast("Hendelse slettet");
+    render();
+  } catch(e){
+    console.error(e);
+    toast("Kunne ikke slette", "error");
+  }
+}
+
+/* ============================================================
+ *  Actions – Allowance (Chores)
+ * ============================================================ */
+function calcStatsForChild(name){
+  // Godkjente utbetalinger er worker rows med approved_at + earned_amount
+  const approved = state.data.workers.filter(w => w.worker_name === name && w.approved_at);
+  const sum = approved.reduce((acc,w)=>acc + (w.earned_amount||0), 0);
+  const pending = state.data.workers.filter(w => w.worker_name === name && w.completed_at && !w.approved_at).length;
+  return { approvedCount: approved.length, sum, pending };
+}
+
+function choreStatusLabel(s){
+  const map = {
+    available:"Tilgjengelig",
+    in_progress:"Pågår",
+    completed:"Utført (venter)",
+    approved:"Godkjent",
+    rejected:"Avvist"
+  };
+  return map[s] || s || "";
+}
+
+async function createChoreTask(){
+  if(!isParent()) return toast("Bare foreldre kan opprette oppgaver", "warn");
+  const title = document.getElementById("ch_title").value.trim();
+  const amount = parseInt(document.getElementById("ch_amount").value || "0",10);
+  const category = document.getElementById("ch_cat").value;
+  if(!title) return toast("Skriv inn oppgavetittel", "warn");
+  if(!isFinite(amount) || amount<=0) return toast("Skriv inn beløp (kr)", "warn");
+
+  try{
+    const row = await sb("chore_tasks", {
+      method:"POST",
+      body:{
+        title,
+        description: null,
+        amount,
+        task_type: "once",
+        category: category || "hjemme",
+        status: "available",
+        created_by: state.user.name,
+        created_by_color: state.user.color,
+        proposed_by_child: false,
+        created_at: new Date().toISOString()
+      }
+    });
+    const inserted = Array.isArray(row) ? row[0] : row;
+    if(inserted) state.data.chores.unshift(inserted);
+    document.getElementById("ch_title").value = "";
+    document.getElementById("ch_amount").value = "";
+    toast("Oppgave opprettet");
+    render();
+  } catch(e){
+    console.error(e);
+    toast("Kunne ikke opprette oppgave", "error");
+  }
+}
+
+function getWorkerForTask(taskId){
+  return state.data.workers.find(w => w.task_id === taskId);
+}
+
+async function takeTask(taskId){
+  if(isParent()) return toast("Barn tar oppgaver 🙂", "warn");
+  const t = state.data.chores.find(x=>x.id===taskId);
+  if(!t) return;
+  if(t.status !== "available") return toast("Oppgaven er ikke tilgjengelig", "warn");
+
+  try{
+    // 1) lag worker rad
+    const wr = await sb("chore_workers", {
+      method:"POST",
+      body:{
+        task_id: taskId,
+        worker_name: state.user.name,
+        worker_color: state.user.color,
+        percentage: 100,
+        confirmed: true,
+        earned_amount: null,
+        started_at: new Date().toISOString()
+      }
+    });
+    const insertedW = Array.isArray(wr) ? wr[0] : wr;
+    if(insertedW) state.data.workers.unshift(insertedW);
+
+    // 2) oppdater task status
+    await sb(`chore_tasks?id=eq.${taskId}`, { method:"PATCH", body:{ status:"in_progress" } });
+    t.status = "in_progress";
+
+    toast("Oppgave tatt! 💪");
+    render();
+  } catch(e){
+    console.error(e);
+    toast("Kunne ikke ta oppgaven", "error");
+  }
+}
+
+async function completeTask(taskId){
+  if(isParent()) return toast("Barn markerer fullført 🙂", "warn");
+  const t = state.data.chores.find(x=>x.id===taskId);
+  if(!t) return;
+  if(t.status !== "in_progress") return toast("Oppgaven må være 'pågår'", "warn");
+  const w = getWorkerForTask(taskId);
+  if(!w || w.worker_name !== state.user.name) return toast("Dette er ikke din oppgave", "warn");
+
+  try{
+    const now = new Date().toISOString();
+    await sb(`chore_workers?id=eq.${w.id}`, { method:"PATCH", body:{ completed_at: now } });
+    w.completed_at = now;
+
+    await sb(`chore_tasks?id=eq.${taskId}`, { method:"PATCH", body:{ status:"completed" } });
+    t.status = "completed";
+
+    toast("Markert som fullført – venter på godkjenning");
+    render();
+  } catch(e){
+    console.error(e);
+    toast("Kunne ikke markere fullført", "error");
+  }
+}
+
+async function approveTask(taskId){
+  if(!isParent()) return toast("Bare foreldre kan godkjenne", "warn");
+  const t = state.data.chores.find(x=>x.id===taskId);
+  if(!t) return;
+  if(t.status !== "completed") return toast("Oppgaven må være 'utført (venter)'", "warn");
+  const w = getWorkerForTask(taskId);
+  if(!w || !w.completed_at) return toast("Mangler worker/fullført", "warn");
+
+  try{
+    const now = new Date().toISOString();
+    // oppdater worker
+    await sb(`chore_workers?id=eq.${w.id}`, {
+      method:"PATCH",
+      body:{
+        approved_at: now,
+        approved_by: state.user.name,
+        earned_amount: t.amount
+      }
+    });
+    w.approved_at = now;
+    w.approved_by = state.user.name;
+    w.earned_amount = t.amount;
+
+    // oppdater task
+    await sb(`chore_tasks?id=eq.${taskId}`, {
+      method:"PATCH",
+      body:{
+        status:"approved",
+        approved_at: now,
+        approved_by: state.user.name
+      }
+    });
+    t.status = "approved";
+    t.approved_at = now;
+    t.approved_by = state.user.name;
+
+    toast("Godkjent ✅");
+    render();
+  } catch(e){
+    console.error(e);
+    toast("Kunne ikke godkjenne", "error");
+  }
+}
+
+/* ============================================================
+ *  Render
+ * ============================================================ */
+function tabBtn(id, label){
+  const u = state.user;
+  const active = state.tab === id;
+  const style = active
+    ? `background:${u.color}; border-color:${u.color};`
+    : `border-color:${u.color}; color:${u.color};`;
+  return `<button class="tab ${active?"active":""}" style="${style}" onclick="switchTab('${id}')">${label}</button>`;
+}
+
+function renderLogin(){
+  appEl.innerHTML = `
+    <div style="padding:20px; text-align:center">
+      <div style="font-size:42px; margin-top:10px">👨‍👩‍👧‍👦</div>
+      <h2 style="margin:10px 0 6px 0; font-weight:950">Familietid</h2>
+      <div class="muted" style="margin-bottom:14px">Velg hvem du er</div>
+      <div style="display:flex; flex-direction:column; gap:12px; max-width:460px; margin:0 auto">
+        ${USERS.map(u=>`
+          <button class="btn" style="background:#fff; border:3px solid ${u.color}; color:${u.color}; padding:16px; border-radius:18px"
+                  onclick="selectUser('${escapeHtml(u.name)}')">
+            <span style="font-size:20px">${u.emoji}</span>
+            <span style="margin-left:10px; font-size:16px; font-weight:950">${escapeHtml(u.name)}</span>
+            <span class="pill" style="margin-left:10px">${u.role==="parent"?"Forelder":"Barn"}</span>
+          </button>
+        `).join("")}
+      </div>
+      <div class="muted" style="margin-top:16px; font-size:12px">Kjører direkte fra Supabase – deles av hele familien.</div>
+    </div>
+  `;
+}
+
+function renderHeader(){
+  const u = state.user;
+  const online = state.online ? `<span class="badge">🟢 Online</span>` : `<span class="badge">🟠 Offline?</span>`;
+  return `
+    <div class="top" style="background:linear-gradient(135deg, ${u.color} 0%, ${u.color}80 100%);">
+      <div class="topL">
+        <div class="emoji">${u.emoji}</div>
+        <div>
+          <div class="h1">Hei, ${escapeHtml(u.name)}!</div>
+          <div class="sub">${online} <span style="margin-left:8px; opacity:.9">Familietid</span></div>
+        </div>
+      </div>
+      <button class="btn ghost" onclick="logout()">Bytt bruker</button>
+    </div>
+  `;
+}
+
+function renderTabs(){
+  return `
+    <div class="tabs">
+      ${tabBtn("shopping","🛒 Handleliste")}
+      ${tabBtn("calendar","📅 Kalender")}
+      ${tabBtn("notes","📝 Notater")}
+      ${tabBtn("maintenance","🔧 Vedlikehold")}
+      ${tabBtn("allowance","💰 Ukelønn")}
+    </div>
+  `;
+}
+
+function renderShopping(){
+  const loading = state.loading.shopping ? `<span class="pill">Laster…</span>` : "";
+  const items = state.data.shopping;
+  return `
+    <div>
+      <div style="display:flex; align-items:center; justify-content:space-between; gap:10px">
+        <h3 style="margin:0; font-weight:950">🛒 Handleliste</h3>
+        <div>${loading}</div>
+      </div>
+
+      <div class="sep"></div>
+
+      <div class="row" style="align-items:center">
+        <input id="shop_text" class="field" style="flex:2" placeholder="Hva skal vi handle? (Enter)"
+               onkeypress="if(event.key==='Enter'){ addShopping(); }">
+        <input id="shop_qty" class="field" style="flex:0.6; max-width:120px" type="number" min="1" value="1" />
+        <button class="btn primary" onclick="addShopping()">Legg til</button>
+        <button class="btn" style="background:#11182710; color:#111827" onclick="loadShopping()">Oppdater</button>
+      </div>
+
+      <div class="list">
+        ${items.length===0 ? `
+          <div class="item" style="border-left-color:${state.user.color}">
+            <div>
+              <div class="title">Handlelisten er tom</div>
+              <div class="meta">Legg til første vare over 👆</div>
+            </div>
+          </div>
+        ` : items.map(it=>{
+          const left = it.added_by_color || state.user.color;
+          const checked = !!it.checked;
+          return `
+            <div class="item" style="border-left-color:${left}">
+              <div style="flex:1">
+                <div class="title" style="${checked?"text-decoration:line-through; color:#9ca3af":""}">
+                  ${escapeHtml(it.text)} ${it.quantity>1?`<span class="pill">${it.quantity}x</span>`:""}
                 </div>
-            `;
-        }
-        
-        function renderMainApp(app) {
-            const user = state.currentUser;
-            const tabContent = {
-                shopping: renderShoppingList(),
-                calendar: renderCalendar(),
-                notes: renderNotes(),
-                maintenance: renderMaintenance(),
-                allowance: renderAllowance()
-            };
-            
-            app.innerHTML = `
-                <div style="max-width: 800px; margin: 0 auto;">
-                    <!-- Header -->
-                    <div style="background: linear-gradient(135deg, ${user.color} 0%, ${user.color}80 100%);
-                                padding: 25px; border-radius: 25px; margin-bottom: 25px; color: white;
-                                display: flex; align-items: center; justify-content: space-between;">
-                        <div style="display: flex; align-items: center; gap: 20px;">
-                            <div style="font-size: 3rem;">${user.emoji}</div>
-                            <div>
-                                <h1 style="font-size: 1.8rem; font-family: 'Fredoka', sans-serif;">
-                                    Hei, ${user.name}!
-                                </h1>
-                                <p style="opacity: 0.9;">${state.shoppingItems.length} varer i handlelisten</p>
-                            </div>
-                        </div>
-                        
-                        <button onclick="logout()" class="btn"
-                            style="padding: 12px 20px; background: rgba(255,255,255,0.2); border: 2px solid white;
-                                   border-radius: 15px; color: white; font-weight: 700; cursor: pointer;">
-                            Bytt bruker
-                        </button>
-                    </div>
-                    
-                    <!-- Tabs -->
-                    <div style="display: flex; gap: 10px; margin-bottom: 25px; flex-wrap: wrap;">
-                        ${Object.keys(tabContent).map(tab => `
-                            <button onclick="switchTab('${tab}')" class="btn tab"
-                                style="padding: 16px; background: ${state.activeTab === tab ? user.color : 'white'};
-                                       color: ${state.activeTab === tab ? 'white' : user.color};
-                                       border: 3px solid ${user.color}; border-radius: 15px;
-                                       font-weight: 700; cursor: pointer; flex: 1; min-width: 140px;">
-                                ${getTabIcon(tab)} ${getTabName(tab)}
-                            </button>
-                        `).join('')}
-                    </div>
-                    
-                    <!-- Content -->
-                    <div style="background: white; padding: 25px; border-radius: 20px; 
-                                box-shadow: 0 8px 30px rgba(0,0,0,0.1); min-height: 400px;">
-                        ${tabContent[state.activeTab]}
-                    </div>
-                    
-                    <!-- Footer -->
-                    <div style="text-align: center; margin-top: 30px; padding: 20px; color: #666; font-size: 0.9rem;">
-                        <p>👨‍👩‍👧‍👦 Alle funksjoner er aktivert og fungerer!</p>
-                    </div>
+                <div class="meta">
+                  <span style="color:${left}; font-weight:950">${escapeHtml(it.added_by||"")}</span>
+                  · ${fmtAgo(it.timestamp)}
                 </div>
-            `;
-        }
-        
-        function getTabIcon(tab) {
-            const icons = {
-                shopping: '🛒',
-                calendar: '📅',
-                notes: '📝',
-                maintenance: '🔧',
-                allowance: '💰'
-            };
-            return icons[tab] || '📋';
-        }
-        
-        function getTabName(tab) {
-            const names = {
-                shopping: 'Handleliste',
-                calendar: 'Kalender',
-                notes: 'Notater',
-                maintenance: 'Vedlikehold',
-                allowance: 'Ukelønn'
-            };
-            return names[tab] || tab;
-        }
-        
-        function renderShoppingList() {
-            return `
-                <div>
-                    <h2 style="font-size: 1.8rem; margin-bottom: 20px;">🛒 Handleliste</h2>
-                    
-                    <!-- Input -->
-                    <div style="display: flex; gap: 10px; margin-bottom: 25px;">
-                        <input type="text" id="shoppingInput" placeholder="Hva skal vi handle?"
-                            style="flex: 1; padding: 12px; border: 2px solid #e0e0e0; border-radius: 10px;"
-                            onkeypress="if(event.key === 'Enter') addShoppingItem(this.value.trim(), 1)">
-                        <button onclick="addShoppingItem(document.getElementById('shoppingInput').value.trim(), 1)"
-                            style="padding: 12px 24px; background: ${state.currentUser.color}; color: white;
-                                   border: none; border-radius: 10px; font-weight: 700; cursor: pointer;">
-                            Legg til
-                        </button>
-                    </div>
-                    
-                    <!-- List -->
-                    <div style="display: flex; flex-direction: column; gap: 12px;">
-                        ${state.shoppingItems.length === 0 ? `
-                            <p style="text-align: center; color: #999; padding: 40px;">Handlelisten er tom!</p>
-                        ` : state.shoppingItems.map(item => `
-                            <div style="display: flex; align-items: center; gap: 15px; padding: 15px;
-                                        background: #f8f9fa; border-radius: 12px; border-left: 4px solid ${item.added_by_color}">
-                                <button onclick="toggleShoppingItem(${item.id})"
-                                    style="width: 24px; height: 24px; border: 2px solid ${item.added_by_color};
-                                           background: ${item.checked ? item.added_by_color : 'white'};
-                                           border-radius: 50%; cursor: pointer;">
-                                    ${item.checked ? '✓' : ''}
-                                </button>
-                                <div style="flex: 1;">
-                                    <div style="font-weight: 700; ${item.checked ? 'text-decoration: line-through; color: #999;' : ''}">
-                                        ${item.text}
-                                        <span style="background: ${item.added_by_color}30; color: ${item.added_by_color};
-                                               padding: 2px 8px; border-radius: 10px; margin-left: 8px; font-size: 0.9rem;">
-                                            ${item.quantity}x
-                                        </span>
-                                    </div>
-                                    <div style="font-size: 0.85rem; color: #666;">
-                                        ${item.added_by} • ${formatDate(item.timestamp)}
-                                    </div>
-                                </div>
-                                <button onclick="deleteShoppingItem(${item.id})"
-                                    style="color: #ff6b6b; background: none; border: none; cursor: pointer; padding: 8px;">
-                                    🗑️
-                                </button>
-                            </div>
-                        `).join('')}
-                    </div>
+              </div>
+              <div style="display:flex; gap:8px; align-items:center">
+                <button class="btn small" style="background:${left}; color:#fff"
+                        onclick="toggleShopping(${it.id}, ${checked})">${checked?"✅":"◻️"}</button>
+                <button class="btn small danger" onclick="deleteShopping(${it.id})">Slett</button>
+              </div>
+            </div>
+          `;
+        }).join("")}
+      </div>
+    </div>
+  `;
+}
+
+function renderNotes(){
+  const loading = state.loading.notes ? `<span class="pill">Laster…</span>` : "";
+  const notes = state.data.notes;
+  return `
+    <div>
+      <div style="display:flex; align-items:center; justify-content:space-between; gap:10px">
+        <h3 style="margin:0; font-weight:950">📝 Notater</h3>
+        <div>${loading}</div>
+      </div>
+
+      <div class="sep"></div>
+
+      <textarea id="note_text" class="field" style="min-height:110px" placeholder="Skriv et notat…"></textarea>
+      <div class="row" style="margin-top:10px; align-items:center">
+        <button class="btn primary" onclick="addNote()">Lagre notat</button>
+        <button class="btn" style="background:#11182710; color:#111827" onclick="loadNotes()">Oppdater</button>
+      </div>
+
+      <div class="list">
+        ${notes.length===0 ? `
+          <div class="item" style="border-left-color:${state.user.color}">
+            <div>
+              <div class="title">Ingen notater enda</div>
+              <div class="meta">Legg inn et notat over 👆</div>
+            </div>
+          </div>
+        ` : notes.map(n=>{
+          const left = n.added_by_color || state.user.color;
+          return `
+            <div class="item" style="border-left-color:${left}">
+              <div style="flex:1">
+                <div class="title" style="font-weight:850">${escapeHtml(n.text)}</div>
+                <div class="meta">
+                  <span style="color:${left}; font-weight:950">${escapeHtml(n.added_by||"")}</span>
+                  · ${fmtAgo(n.timestamp)}
                 </div>
-            `;
-        }
-        
-        function renderCalendar() {
-            const today = new Date().toISOString().split('T')[0];
-            const todayEvents = getEventsForDate(today);
-            
-            return `
-                <div>
-                    <h2 style="font-size: 1.8rem; margin-bottom: 20px;">📅 Kalender</h2>
-                    
-                    <!-- Quick add -->
-                    <div style="background: #f0f7ff; padding: 20px; border-radius: 12px; margin-bottom: 25px;">
-                        <h3 style="margin-bottom: 15px;">Legg til hendelse</h3>
-                        <div style="display: flex; flex-direction: column; gap: 10px;">
-                            <input type="text" id="eventTitle" placeholder="Hva skjer?" style="padding: 10px; border: 1px solid #ccc; border-radius: 6px;">
-                            <input type="date" id="eventDate" value="${today}" style="padding: 10px; border: 1px solid #ccc; border-radius: 6px;">
-                            <input type="time" id="eventTime" value="18:00" style="padding: 10px; border: 1px solid #ccc; border-radius: 6px;">
-                            <button onclick="addCalendarEvent(
-                                document.getElementById('eventTitle').value,
-                                document.getElementById('eventDate').value,
-                                document.getElementById('eventTime').value
-                            )" style="padding: 12px; background: #4CAF50; color: white; border: none; border-radius: 6px; cursor: pointer;">
-                                Legg til i kalender
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <!-- Today's events -->
-                    <h3 style="margin-bottom: 15px;">I dag (${new Date().toLocaleDateString('no-NO', { weekday: 'long', day: 'numeric', month: 'long' })})</h3>
-                    ${todayEvents.length === 0 ? `
-                        <p style="color: #666; padding: 20px; text-align: center;">Ingen hendelser i dag</p>
-                    ` : `
-                        <div style="display: flex; flex-direction: column; gap: 10px;">
-                            ${todayEvents.map(event => `
-                                <div style="padding: 15px; background: ${event.color}20; border-left: 4px solid ${event.color};
-                                            border-radius: 8px;">
-                                    <div style="font-weight: 700;">${event.title}</div>
-                                    <div style="font-size: 0.9rem; color: #666;">${event.time} • ${event.duration} min • ${event.added_by}</div>
-                                </div>
-                            `).join('')}
-                        </div>
-                    `}
-                    
-                    <!-- Month calendar preview -->
-                    <div style="margin-top: 30px;">
-                        <h3 style="margin-bottom: 15px;">Månedens oversikt</h3>
-                        <div class="calendar-grid">
-                            ${['Man', 'Tir', 'Ons', 'Tor', 'Fre', 'Lør', 'Søn'].map(day => `
-                                <div style="padding: 10px; background: #f5f5f5; text-align: center; font-weight: 700;">${day}</div>
-                            `).join('')}
-                            ${Array.from({ length: 35 }, (_, i) => {
-                                const date = new Date();
-                                date.setDate(i - 15);
-                                const dateStr = date.toISOString().split('T')[0];
-                                const events = getEventsForDate(dateStr);
-                                
-                                return `
-                                    <div class="calendar-day">
-                                        <div style="font-weight: 700; margin-bottom: 5px;">${date.getDate()}</div>
-                                        ${events.slice(0, 2).map(event => `
-                                            <div class="calendar-event">${event.time} ${event.title.substring(0, 10)}</div>
-                                        `).join('')}
-                                        ${events.length > 2 ? `<div style="font-size: 11px; color: #666;">+${events.length - 2} flere</div>` : ''}
-                                    </div>
-                                `;
-                            }).join('')}
-                        </div>
-                    </div>
+              </div>
+              <button class="btn small danger" onclick="deleteNote(${n.id})">Slett</button>
+            </div>
+          `;
+        }).join("")}
+      </div>
+    </div>
+  `;
+}
+
+function renderMaintenance(){
+  const loading = state.loading.maintenance ? `<span class="pill">Laster…</span>` : "";
+  const tasks = state.data.maintenance;
+  return `
+    <div>
+      <div style="display:flex; align-items:center; justify-content:space-between; gap:10px">
+        <h3 style="margin:0; font-weight:950">🔧 Vedlikehold</h3>
+        <div>${loading}</div>
+      </div>
+
+      <div class="sep"></div>
+
+      <div class="row" style="align-items:center">
+        <input id="maint_text" class="field" style="flex:2" placeholder="Ny vedlikeholdsoppgave (Enter)"
+               onkeypress="if(event.key==='Enter'){ addMaintenance(); }">
+        <button class="btn primary" onclick="addMaintenance()">Legg til</button>
+        <button class="btn" style="background:#11182710; color:#111827" onclick="loadMaintenance()">Oppdater</button>
+      </div>
+
+      <div class="list">
+        ${tasks.length===0 ? `
+          <div class="item" style="border-left-color:${state.user.color}">
+            <div>
+              <div class="title">Ingen vedlikeholdsoppgaver</div>
+              <div class="meta">Legg til noe over 👆</div>
+            </div>
+          </div>
+        ` : tasks.map(t=>{
+          const left = t.added_by_color || state.user.color;
+          const done = !!t.completed;
+          return `
+            <div class="item" style="border-left-color:${left}; opacity:${done?0.75:1}">
+              <div style="flex:1">
+                <div class="title" style="${done?"text-decoration:line-through; color:#9ca3af":""}">
+                  ${escapeHtml(t.text)}
+                  <span class="pill">prio ${t.priority ?? ""}</span>
                 </div>
-            `;
-        }
-        
-        function renderNotes() {
-            return `
-                <div>
-                    <h2 style="font-size: 1.8rem; margin-bottom: 20px;">📝 Notater</h2>
-                    
-                    <!-- Input -->
-                    <div style="margin-bottom: 25px;">
-                        <textarea id="noteInput" placeholder="Skriv et notat..." 
-                            style="width: 100%; padding: 15px; border: 2px solid #e0e0e0; border-radius: 10px;
-                                   min-height: 100px; font-family: inherit; margin-bottom: 15px;"></textarea>
-                        <button onclick="addNote(document.getElementById('noteInput').value.trim())"
-                            style="padding: 12px 24px; background: ${state.currentUser.color}; color: white;
-                                   border: none; border-radius: 10px; font-weight: 700; cursor: pointer;">
-                            Lagre notat
-                        </button>
-                    </div>
-                    
-                    <!-- Notes list -->
-                    <div style="display: flex; flex-direction: column; gap: 15px;">
-                        ${state.notes.length === 0 ? `
-                            <p style="text-align: center; color: #999; padding: 40px;">Ingen notater ennå</p>
-                        ` : state.notes.map(note => `
-                            <div style="padding: 20px; background: #f8f9fa; border-radius: 12px;
-                                        border-left: 4px solid ${note.added_by_color}">
-                                <div style="margin-bottom: 10px;">${note.text}</div>
-                                <div style="display: flex; justify-content: space-between; align-items: center;">
-                                    <div style="font-size: 0.85rem; color: #666;">
-                                        <span style="color: ${note.added_by_color}; font-weight: 700;">${note.added_by}</span>
-                                        • ${formatDate(note.timestamp)}
-                                    </div>
-                                    <button onclick="deleteNote(${note.id})"
-                                        style="color: #ff6b6b; background: none; border: none; cursor: pointer;">
-                                        Slett
-                                    </button>
-                                </div>
-                            </div>
-                        `).join('')}
-                    </div>
+                <div class="meta">
+                  <span style="color:${left}; font-weight:950">${escapeHtml(t.added_by||"")}</span>
+                  ${t.timestamp?`· ${fmtAgo(t.timestamp)}`:""}
                 </div>
-            `;
-        }
-        
-        function renderMaintenance() {
-            return `
-                <div>
-                    <h2 style="font-size: 1.8rem; margin-bottom: 20px;">🔧 Vedlikehold</h2>
-                    
-                    <!-- Task list -->
-                    <div style="display: flex; flex-direction: column; gap: 12px;">
-                        ${state.maintenanceTasks.length === 0 ? `
-                            <p style="text-align: center; color: #999; padding: 40px;">Ingen vedlikeholdsoppgaver</p>
-                        ` : state.maintenanceTasks.map(task => `
-                            <div style="display: flex; align-items: center; gap: 15px; padding: 15px;
-                                        background: #f8f9fa; border-radius: 12px;">
-                                <button onclick="toggleMaintenanceTask(${task.id})"
-                                    style="width: 24px; height: 24px; border: 2px solid ${task.added_by_color};
-                                           background: ${task.completed ? task.added_by_color : 'white'};
-                                           border-radius: 50%; cursor: pointer;">
-                                    ${task.completed ? '✓' : ''}
-                                </button>
-                                <div style="flex: 1; ${task.completed ? 'text-decoration: line-through; color: #999;' : ''}">
-                                    ${task.text}
-                                </div>
-                                <div style="font-size: 0.85rem; color: #666;">
-                                    ${task.added_by}
-                                </div>
-                            </div>
-                        `).join('')}
+              </div>
+              <div style="display:flex; gap:8px">
+                <button class="btn small" style="background:${left}; color:#fff"
+                        onclick="toggleMaintenance(${t.id}, ${done})">${done?"↩️":"✅"}</button>
+                <button class="btn small danger" onclick="deleteMaintenance(${t.id})">Slett</button>
+              </div>
+            </div>
+          `;
+        }).join("")}
+      </div>
+    </div>
+  `;
+}
+
+function renderCalendar(){
+  const loading = state.loading.calendar ? `<span class="pill">Laster…</span>` : "";
+  const evs = state.data.calendar;
+
+  const today = new Date();
+  const todayKey = today.toISOString().slice(0,10);
+  const todays = evs.filter(e => (e.start_time||"").slice(0,10) === todayKey);
+
+  return `
+    <div>
+      <div style="display:flex; align-items:center; justify-content:space-between; gap:10px">
+        <h3 style="margin:0; font-weight:950">📅 Kalender</h3>
+        <div>${loading}</div>
+      </div>
+
+      <div class="sep"></div>
+
+      <div class="grid2" style="align-items:start">
+        <div>
+          <div class="badge" style="margin-bottom:10px">Legg til hendelse</div>
+          <input id="cal_title" class="field" placeholder="Tittel (f.eks. Fotballtrening)">
+          <div class="row" style="margin-top:10px">
+            <input id="cal_date" class="field" type="date" value="${todayKey}">
+            <input id="cal_time" class="field" type="time" value="18:00">
+          </div>
+          <div class="row" style="margin-top:10px; align-items:center">
+            <input id="cal_dur" class="field" type="number" min="15" step="15" value="60" style="max-width:140px">
+            <label class="badge" style="background:#11182708">
+              <input id="cal_allday" type="checkbox" style="transform:scale(1.2); margin-right:8px"> Heldag
+            </label>
+          </div>
+          <div class="row" style="margin-top:10px">
+            <button class="btn primary" onclick="addCalendar()">Legg til</button>
+            <button class="btn" style="background:#11182710; color:#111827" onclick="loadCalendar()">Oppdater</button>
+          </div>
+          <div class="muted" style="margin-top:8px; font-size:12px">
+            Tips: Heldag = starter 08:00. Varighet brukes for sluttid.
+          </div>
+        </div>
+
+        <div>
+          <div class="badge" style="margin-bottom:10px">I dag</div>
+          ${todays.length===0 ? `<div class="muted">Ingen hendelser i dag.</div>` : `
+            <div class="list">
+              ${todays.map(e=>{
+                const left = e.added_by_color || state.user.color;
+                return `
+                  <div class="item" style="border-left-color:${left}">
+                    <div style="flex:1">
+                      <div class="title">${escapeHtml(e.title)}</div>
+                      <div class="meta">
+                        <span style="color:${left}; font-weight:950">${escapeHtml(e.added_by||"")}</span>
+                        · ${fmtTimeOnly(e.start_time)}–${e.end_time?fmtTimeOnly(e.end_time):""}
+                      </div>
                     </div>
-                    
-                    <!-- Add task -->
-                    <div style="margin-top: 30px; padding: 20px; background: #fff3e0; border-radius: 12px;">
-                        <h3 style="margin-bottom: 15px;">Legg til ny oppgave</h3>
-                        <div style="display: flex; gap: 10px;">
-                            <input type="text" id="maintenanceInput" placeholder="Hva må gjøres?"
-                                style="flex: 1; padding: 10px; border: 1px solid #ccc; border-radius: 6px;">
-                            <button onclick="state.maintenanceTasks.push({
-                                id: Date.now(),
-                                text: document.getElementById('maintenanceInput').value.trim(),
-                                completed: false,
-                                priority: state.maintenanceTasks.length + 1,
-                                added_by: state.currentUser.name,
-                                added_by_color: state.currentUser.color
-                            }); document.getElementById('maintenanceInput').value = ''; renderApp();"
-                                style="padding: 10px 20px; background: #FF9800; color: white; border: none; border-radius: 6px; cursor: pointer;">
-                                Legg til
-                            </button>
-                        </div>
-                    </div>
+                    <button class="btn small danger" onclick="deleteCalendar(${e.id})">Slett</button>
+                  </div>
+                `;
+              }).join("")}
+            </div>
+          `}
+        </div>
+      </div>
+
+      <div class="sep"></div>
+
+      <div class="badge" style="margin-bottom:10px">Kommende</div>
+      <div class="list">
+        ${evs.length===0 ? `
+          <div class="item" style="border-left-color:${state.user.color}">
+            <div>
+              <div class="title">Ingen kalenderhendelser</div>
+              <div class="meta">Legg til en hendelse over 👆</div>
+            </div>
+          </div>
+        ` : evs.slice(0,25).map(e=>{
+          const left = e.added_by_color || state.user.color;
+          return `
+            <div class="item" style="border-left-color:${left}">
+              <div style="flex:1">
+                <div class="title">${escapeHtml(e.title)}</div>
+                <div class="meta">
+                  <span style="color:${left}; font-weight:950">${escapeHtml(e.added_by||"")}</span>
+                  · ${fmtDateOnly(e.start_time)} ${fmtTimeOnly(e.start_time)}
                 </div>
-            `;
+              </div>
+              <button class="btn small danger" onclick="deleteCalendar(${e.id})">Slett</button>
+            </div>
+          `;
+        }).join("")}
+      </div>
+    </div>
+  `;
+}
+
+function renderAllowance(){
+  const loading = state.loading.allowance ? `<span class="pill">Laster…</span>` : "";
+  const chores = state.data.chores;
+  const workers = state.data.workers;
+
+  const childStats = USERS.filter(u=>u.role==="child").map(u=>{
+    const s = calcStatsForChild(u.name);
+    return { ...u, ...s };
+  });
+
+  const available = chores.filter(c=>c.status==="available");
+  const inprog = chores.filter(c=>c.status==="in_progress");
+  const completed = chores.filter(c=>c.status==="completed");
+  const approved = chores.filter(c=>c.status==="approved");
+
+  function renderTaskCard(t){
+    const left = t.created_by_color || "#11182755";
+    const w = workers.find(x=>x.task_id===t.id);
+    const assignee = w ? `${w.worker_name}` : "";
+    const status = choreStatusLabel(t.status);
+    const canTake = (!isParent() && t.status==="available");
+    const canComplete = (!isParent() && t.status==="in_progress" && w && w.worker_name===state.user.name);
+    const canApprove = (isParent() && t.status==="completed");
+
+    return `
+      <div class="item" style="border-left-color:${left}">
+        <div style="flex:1">
+          <div class="title">${escapeHtml(t.title)} <span class="pill">${t.amount} kr</span></div>
+          <div class="meta">
+            <span style="color:${left}; font-weight:950">${escapeHtml(t.created_by||"")}</span>
+            · ${escapeHtml(status)}
+            ${assignee ? `· <span style="font-weight:950; color:${w.worker_color||"#111827"}">${escapeHtml(assignee)}</span>` : ""}
+          </div>
+        </div>
+        <div style="display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end">
+          ${canTake ? `<button class="btn small ok" onclick="takeTask(${t.id})">Ta</button>` : ""}
+          ${canComplete ? `<button class="btn small" style="background:${state.user.color}; color:#fff" onclick="completeTask(${t.id})">Fullfør</button>` : ""}
+          ${canApprove ? `<button class="btn small ok" onclick="approveTask(${t.id})">Godkjenn</button>` : ""}
+        </div>
+      </div>
+    `;
+  }
+
+  return `
+    <div>
+      <div style="display:flex; align-items:center; justify-content:space-between; gap:10px">
+        <h3 style="margin:0; font-weight:950">💰 Ukelønn</h3>
+        <div>${loading}</div>
+      </div>
+
+      <div class="sep"></div>
+
+      <div class="grid2">
+        <div>
+          <div class="badge" style="margin-bottom:10px">Statistikk (godkjent)</div>
+          <div class="list">
+            ${childStats.map(s=>`
+              <div class="item" style="border-left-color:${s.color}">
+                <div style="flex:1">
+                  <div class="title">${s.emoji} ${escapeHtml(s.name)}</div>
+                  <div class="meta">Godkjente: <b>${s.approvedCount}</b> · Sum: <b>${s.sum} kr</b> · Venter: <b>${s.pending}</b></div>
+                </div>
+              </div>
+            `).join("")}
+          </div>
+          <div class="muted" style="font-size:12px; margin-top:8px">
+            “Sum” øker når forelder trykker “Godkjenn”.
+          </div>
+        </div>
+
+        <div>
+          <div class="badge" style="margin-bottom:10px">Opprett oppgave</div>
+          ${isParent() ? `
+            <input id="ch_title" class="field" placeholder="Oppgavetittel (f.eks. Vaske badet)">
+            <div class="row" style="margin-top:10px">
+              <input id="ch_amount" class="field" type="number" min="1" step="5" placeholder="Beløp (kr)">
+              <select id="ch_cat" class="field">
+                <option value="hjemme">Hjemme</option>
+                <option value="ute">Ute</option>
+                <option value="annet">Annet</option>
+              </select>
+            </div>
+            <div class="row" style="margin-top:10px">
+              <button class="btn primary" onclick="createChoreTask()">Opprett</button>
+              <button class="btn" style="background:#11182710; color:#111827" onclick="loadAllowance()">Oppdater</button>
+            </div>
+          ` : `
+            <div class="muted">Foreldre kan opprette oppgaver her.</div>
+            <div class="row" style="margin-top:10px">
+              <button class="btn" style="background:#11182710; color:#111827" onclick="loadAllowance()">Oppdater</button>
+            </div>
+          `}
+        </div>
+      </div>
+
+      <div class="sep"></div>
+
+      <div class="badge" style="margin-bottom:10px">Tilgjengelige oppgaver</div>
+      <div class="list">
+        ${available.length===0 ? `<div class="muted">Ingen tilgjengelige oppgaver akkurat nå.</div>` : available.map(renderTaskCard).join("")}
+      </div>
+
+      <div class="sep"></div>
+
+      <div class="badge" style="margin-bottom:10px">Pågår</div>
+      <div class="list">
+        ${inprog.length===0 ? `<div class="muted">Ingen oppgaver pågår.</div>` : inprog.map(renderTaskCard).join("")}
+      </div>
+
+      <div class="sep"></div>
+
+      <div class="badge" style="margin-bottom:10px">Utført (venter godkjenning)</div>
+      <div class="list">
+        ${completed.length===0 ? `<div class="muted">Ingen oppgaver venter på godkjenning.</div>` : completed.map(renderTaskCard).join("")}
+      </div>
+
+      <div class="sep"></div>
+
+      <div class="badge" style="margin-bottom:10px">Godkjent</div>
+      <div class="list">
+        ${approved.length===0 ? `<div class="muted">Ingen oppgaver er godkjent ennå.</div>` : approved.slice(0,12).map(renderTaskCard).join("")}
+      </div>
+    </div>
+  `;
+}
+
+function render(){
+  if(!state.user) return renderLogin();
+
+  appEl.innerHTML = `
+    ${renderHeader()}
+    <div class="content">
+      ${renderTabs()}
+      <div class="card" style="padding:16px; border-radius:18px; box-shadow:none; background:#ffffffaa">
+        ${
+          state.tab==="shopping" ? renderShopping() :
+          state.tab==="calendar" ? renderCalendar() :
+          state.tab==="notes" ? renderNotes() :
+          state.tab==="maintenance" ? renderMaintenance() :
+          renderAllowance()
         }
-        
-        function renderAllowance() {
-            const isEmmie = state.currentUser.name === 'Emmie';
-            const stats = getEmmieStats();
-            
-            return `
-                <div>
-                    <h2 style="font-size: 1.8rem; margin-bottom: 20px;">💰 Ukelønn</h2>
-                    
-                    ${isEmmie ? `
-                        <!-- Emmie's stats -->
-                        <div style="background: ${state.currentUser.color}15; padding: 25px; border-radius: 20px;
-                                    margin-bottom: 30px; border: 2px solid ${state.currentUser.color}">
-                            <h3 style="margin-bottom: 20px;">📊 Din statistikk</h3>
-                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
-                                <div style="text-align: center; padding: 15px; background: white; border-radius: 12px;">
-                                    <div style="font-size: 0.9rem; color: #666;">Oppgaver</div>
-                                    <div style="font-size: 2rem; font-weight: 700; color: ${state.currentUser.color}">
-                                        ${stats.totalTasks}
-                                    </div>
-                                </div>
-                                <div style="text-align: center; padding: 15px; background: white; border-radius: 12px;">
-                                    <div style="font-size: 0.9rem; color: #666;">Beløp</div>
-                                    <div style="font-size: 2rem; font-weight: 700; color: ${state.currentUser.color}">
-                                        ${stats.totalEarnings} kr
-                                    </div>
-                                </div>
-                            </div>
-                            <p style="color: #666; text-align: center;">${stats.message}</p>
-                        </div>
-                    ` : ''}
-                    
-                    <!-- Available tasks -->
-                    <div style="margin-bottom: 30px;">
-                        <h3 style="margin-bottom: 15px;">Tilgjengelige oppgaver</h3>
-                        ${state.choreTasks.filter(task => task.status === 'available').length === 0 ? `
-                            <p style="color: #666; padding: 20px; text-align: center;">Ingen oppgaver tilgjengelig</p>
-                        ` : `
-                            <div style="display: flex; flex-direction: column; gap: 12px;">
-                                ${state.choreTasks.filter(task => task.status === 'available').map(task => `
-                                    <div style="padding: 20px; background: #e8f5e9; border-radius: 12px; border-left: 4px solid #4CAF50;">
-                                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                                            <div>
-                                                <div style="font-weight: 700; margin-bottom: 5px;">${task.title}</div>
-                                                <div style="font-size: 0.9rem; color: #666;">
-                                                    ${task.category === 'hjemme' ? '🏠' : '🌳'} ${task.category} • ${task.amount} kr
-                                                </div>
-                                            </div>
-                                            ${state.currentUser.name !== 'Kim Rune' && state.currentUser.name !== 'Katrine' ? `
-                                                <button onclick="completeChoreTask(${task.id})"
-                                                    style="padding: 8px 16px; background: #4CAF50; color: white;
-                                                           border: none; border-radius: 8px; cursor: pointer;">
-                                                    Ta oppgave
-                                                </button>
-                                            ` : ''}
-                                        </div>
-                                    </div>
-                                `).join('')}
-                            </div>
-                        `}
-                    </div>
-                    
-                    <!-- Parent section -->
-                    ${state.currentUser.name === 'Kim Rune' || state.currentUser.name === 'Katrine' ? `
-                        <div style="background: #e3f2fd; padding: 20px; border-radius: 12px;">
-                            <h3 style="margin-bottom: 15px;">Foreldreområde</h3>
-                            <p style="color: #666; margin-bottom: 15px;">Her kan du opprette nye oppgaver og godkjenne fullførte oppgaver.</p>
-                            <div style="display: flex; gap: 10px;">
-                                <input type="text" id="newTaskTitle" placeholder="Oppgavetittel"
-                                    style="flex: 1; padding: 10px; border: 1px solid #ccc; border-radius: 6
+      </div>
+
+      <div class="muted" style="text-align:center; margin-top:14px; font-size:12px">
+        Familietid · statisk på Vercel · data i Supabase · <span style="font-weight:900">Ingen eksterne biblioteker</span>
+      </div>
+    </div>
+  `;
+}
+
+/* ============================================================
+ *  App flow
+ * ============================================================ */
+function selectUser(name){
+  const u = USERS.find(x=>x.name===name);
+  if(!u) return;
+  state.user = u;
+  localStorage.setItem(LS_KEY, name);
+  toast(`Velkommen, ${u.name}!`);
+  // last tabens data først (rask følelse av respons)
+  switchTab(state.tab, true);
+}
+
+function logout(){
+  state.user = null;
+  localStorage.removeItem(LS_KEY);
+  state.tab = "shopping";
+  toast("Byttet bruker", "success");
+  render();
+}
+
+function switchTab(tab, silent=false){
+  state.tab = tab;
+  render();
+
+  // last data for valgt fane (hvis ikke lastet)
+  if(tab==="shopping") loadShopping();
+  if(tab==="calendar") loadCalendar();
+  if(tab==="notes") loadNotes();
+  if(tab==="maintenance") loadMaintenance();
+  if(tab==="allowance") loadAllowance();
+
+  if(!silent) hideToast();
+}
+
+/* ============================================================
+ *  Expose functions to window (for onclick handlers)
+ * ============================================================ */
+window.selectUser = selectUser;
+window.logout = logout;
+window.switchTab = switchTab;
+
+window.addShopping = addShopping;
+window.toggleShopping = toggleShopping;
+window.deleteShopping = deleteShopping;
+
+window.addNote = addNote;
+window.deleteNote = deleteNote;
+
+window.addMaintenance = addMaintenance;
+window.toggleMaintenance = toggleMaintenance;
+window.deleteMaintenance = deleteMaintenance;
+
+window.addCalendar = addCalendar;
+window.deleteCalendar = deleteCalendar;
+
+window.createChoreTask = createChoreTask;
+window.takeTask = takeTask;
+window.completeTask = completeTask;
+window.approveTask = approveTask;
+
+/* ============================================================
+ *  Init
+ * ============================================================ */
+(function init(){
+  // render UI med en gang
+  render();
+
+  // auto-login hvis valgt før
+  const saved = localStorage.getItem(LS_KEY);
+  if(saved && USERS.some(u=>u.name===saved)){
+    selectUser(saved);
+  }
+
+  // prøv å sjekke “online” i bakgrunn
+  (async()=>{
+    try{
+      // lett ping: hent 1 rad fra shopping (eller tom)
+      await sb("shopping_items", { query:{ select:"id", limit:"1" } });
+      setOnlineFlag(true);
+    }catch(e){
+      setOnlineFlag(false);
+    }finally{
+      render();
+    }
+  })();
+})();
+</script>
+</body>
+</html>
