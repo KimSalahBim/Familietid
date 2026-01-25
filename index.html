@@ -98,71 +98,60 @@
     .tab.active{background: rgba(99,102,241,.25); border-color: rgba(99,102,241,.35)}
     .content{padding:16px}
     .grid2{display:grid; grid-template-columns:1fr 1fr; gap:12px}
-    .grid3{display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px}
-    @media (max-width:860px){ .grid2,.grid3{grid-template-columns:1fr} }
-
-    .panel{
-      padding:14px;
-      border-radius:18px;
-      border:1px solid rgba(255,255,255,.14);
-      background: rgba(255,255,255,.05);
-    }
-    .title{font-weight:950;margin:0 0 10px 0;letter-spacing:.2px}
-    .muted{color:var(--muted);font-weight:700}
-    .row{display:flex; gap:10px; flex-wrap:wrap; align-items:center}
-    .field, select{
-      width:100%;
-      border:1px solid rgba(255,255,255,.16);
-      background: rgba(0,0,0,.20);
-      color:var(--text);
-      border-radius:14px;
-      padding:12px 12px;
-      outline:none;
-      font-size:15px;
-      font-weight:800;
-    }
-    .field:focus, select:focus{border-color: rgba(99,102,241,.55)}
-    .list{display:flex; flex-direction:column; gap:10px; margin-top:12px}
+    .row{display:flex; gap:10px; align-items:center}
     .item{
-      display:flex; justify-content:space-between; gap:10px; align-items:flex-start;
-      padding:14px;
-      border-radius:18px;
-      border:1px solid rgba(255,255,255,.12);
+      border:1px solid var(--border);
+      border-radius:var(--r);
+      padding:14px 16px;
       background: rgba(255,255,255,.04);
+      margin-bottom:10px;
     }
-    .itL{min-width:0}
-    .itT{font-weight:950}
-    .itM{margin-top:4px; font-size:12px; color:var(--muted); font-weight:750}
-    .itR{display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end}
-    .chip{
-      display:inline-flex; gap:8px; align-items:center;
-      padding:6px 10px;
-      border-radius:999px;
-      border:1px solid rgba(255,255,255,.14);
-      background: rgba(255,255,255,.05);
-      font-size:12px; font-weight:900;
-    }
-    .kpi{display:flex; gap:10px; flex-wrap:wrap}
-    .kpi .chip{padding:8px 12px}
-    .hr{height:1px;background:rgba(255,255,255,.10);margin:12px 0}
-    .toast{
-      position:fixed; top:14px; left:50%; transform:translateX(-50%);
-      max-width:min(900px,92vw);
-      padding:12px 14px;
+    .item.checked{opacity:.55}
+    .itemTop{display:flex;justify-content:space-between;align-items:center;gap:12px}
+    .itemTitle{font-weight:900}
+    .itemSub{color:var(--muted);font-size:12px;margin-top:4px}
+    .inp{
+      background: rgba(255,255,255,.06);
+      border:1px solid var(--border);
       border-radius:14px;
-      border:1px solid rgba(255,255,255,.16);
-      background: rgba(0,0,0,.55);
-      backdrop-filter: blur(10px);
-      font-weight:900;
-      display:flex; gap:10px; align-items:center;
-      opacity:0; pointer-events:none;
-      transition:opacity .18s ease, transform .18s ease;
-      z-index:9999;
+      padding:12px 14px;
+      color:var(--text);
+      font-size:14px;
+      font-weight:700;
+      width:100%;
     }
-    .toast.show{opacity:1; pointer-events:auto; transform:translateX(-50%) translateY(0)}
-    .toast.good{border-color: rgba(34,197,94,.35)}
-    .toast.bad{border-color: rgba(239,68,68,.35)}
-    .toast.warn{border-color: rgba(245,158,11,.40)}
+    .inp:focus{outline:2px solid rgba(99,102,241,.4)}
+    select.inp{appearance:none;cursor:pointer}
+    .badge{
+      display:inline-block;
+      padding:4px 10px;
+      border-radius:999px;
+      font-size:12px;
+      font-weight:900;
+      border:1px solid;
+    }
+    .toast{
+      position:fixed; bottom:20px; left:50%; transform:translateX(-50%) translateY(100px);
+      background: linear-gradient(135deg, rgba(99,102,241,.94), rgba(168,85,247,.94));
+      color:#fff;
+      padding:14px 20px;
+      border-radius:18px;
+      box-shadow:0 8px 30px rgba(0,0,0,.4);
+      display:flex; gap:10px; align-items:center;
+      font-weight:900; font-size:14px;
+      transition: transform .28s cubic-bezier(.34,1.56,.64,1);
+      z-index:9999;
+      border:1px solid rgba(255,255,255,.2);
+    }
+    .toast.show{transform:translateX(-50%) translateY(0)}
+    .toast.good{background: linear-gradient(135deg, rgba(34,197,94,.94), rgba(16,185,129,.94))}
+    .toast.bad{background: linear-gradient(135deg, rgba(239,68,68,.94), rgba(220,38,38,.94))}
+    .toast.warn{background: linear-gradient(135deg, rgba(245,158,11,.94), rgba(217,119,6,.94))}
+    @media(max-width:640px){
+      .grid2{grid-template-columns:1fr}
+      .top{flex-direction:column;align-items:flex-start}
+      .row{flex-wrap:wrap}
+    }
   </style>
 </head>
 <body>
@@ -181,7 +170,7 @@ const SUPABASE_ANON_KEY =
 "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRpZmhlbGJtYXFvb2pxdHFoenNvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg0ODY5NTYsImV4cCI6MjA4NDA2Mjk1Nn0.WFMmeOZvEYL9AAoLRHFVx97b8hT9Z2us-iWAxAjv9Fg";
 
 /* ============================================================
-   USERS (enkel “rolle”-styring uten auth)
+   USERS (enkel "rolle"-styring uten auth)
    ============================================================ */
 const USERS = [
   { name:"Emmie",   emoji:"🌸", color:"#ff6b9d", role:"child"  },
@@ -268,6 +257,7 @@ async function sb(path, { method="GET", body=null, headers={} }={}){
   const text = await res.text();
   const data = text ? JSON.parse(text) : null;
   if(!res.ok){
+    console.error("Supabase error:", {status: res.status, data, url});
     throw new Error((data && (data.message || data.error_description)) || text || `HTTP ${res.status}`);
   }
   return data;
@@ -281,14 +271,54 @@ async function loadShopping(){
   return await sb(`shopping_items?select=*&order=timestamp.desc`);
 }
 async function loadChores(){
-  const [tasks, workers, weekly] = await Promise.all([
+  const [tasks, workers] = await Promise.all([
     sb(`chore_tasks?select=*&order=created_at.desc`),
     sb(`chore_workers?select=*&order=started_at.desc`),
-    // view (du har opprettet weekly_earnings)
-    sb(`weekly_earnings?select=*&order=year.desc,week.desc,worker_name.asc`)
-      .catch(()=>[]) // hvis viewen mangler, fail-safe
   ]);
+  
+  // Compute weekly earnings on the fly instead of using a view
+  const weekly = computeWeeklyEarnings(workers, tasks);
+  
   return { tasks, workers, weekly };
+}
+
+function computeWeeklyEarnings(workers, tasks) {
+  const byWeek = {};
+  
+  workers.forEach(w => {
+    if (!w.approved_at) return;
+    const task = tasks.find(t => t.id === w.task_id);
+    if (!task) return;
+    
+    const d = new Date(w.approved_at);
+    const weekKey = getWeekKeyFromDate(d);
+    const year = d.getFullYear();
+    const week = parseInt(weekKey.split('-W')[1]);
+    
+    const key = `${w.worker_name}-${weekKey}`;
+    if (!byWeek[key]) {
+      byWeek[key] = {
+        worker_name: w.worker_name,
+        year: year,
+        week: week,
+        total_earned: 0
+      };
+    }
+    byWeek[key].total_earned += (w.earned_amount || 0);
+  });
+  
+  return Object.values(byWeek);
+}
+
+function getWeekKeyFromDate(date) {
+  const target = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+  const dayNr = (target.getUTCDay() + 6) % 7;
+  target.setUTCDate(target.getUTCDate() - dayNr + 3);
+  const firstThursday = new Date(Date.UTC(target.getUTCFullYear(),0,4));
+  const diff = target - firstThursday;
+  const week = 1 + Math.round(diff / 604800000);
+  const year = target.getUTCFullYear();
+  return `${year}-W${String(week).padStart(2,"0")}`;
 }
 
 /* ============================================================
@@ -500,209 +530,250 @@ function render(){
 
     <div class="tabs">
       ${tabButtons.map(t=>`
-        <button class="tab ${tab===t.id?"active":""}" onclick="switchTab('${t.id}')">${t.icon} ${t.label}</button>
+        <button class="tab ${tab===t.id?"active":""}" onclick="switchTab('${t.id}')">
+          <span>${t.icon}</span><span>${t.label}</span>
+        </button>
       `).join("")}
     </div>
 
     <div class="content">
-      ${tab==="shopping" ? renderShopping() : ""}
-      ${tab==="allowance" ? renderAllowance() : ""}
+      ${tab==="shopping"? renderShopping() : tab==="allowance"? renderAllowance() : ""}
     </div>
   `;
+}
+
+function renderShopping(){
+  const items = state.data.shopping || [];
+  return `
+    <div class="row" style="margin-bottom:16px">
+      <input id="shopText" class="inp" placeholder="Hva skal vi handle?" />
+      <input id="shopQty" type="number" class="inp" value="1" min="1" style="width:80px" />
+      <button class="btn good" onclick="doAddShopping()">+ Legg til</button>
+    </div>
+    ${items.length===0? `<p style="color:var(--muted);text-align:center;padding:30px 0">Handlelisten er tom</p>` : ""}
+    ${items.map(i=>`
+      <div class="item ${i.checked?"checked":""}">
+        <div class="itemTop">
+          <div style="flex:1">
+            <div class="itemTitle">${escapeHtml(i.text)} <span class="badge" style="border-color:${i.added_by_color};color:${i.added_by_color}">×${i.quantity}</span></div>
+            <div class="itemSub">${escapeHtml(i.added_by)} • ${fmtShort(i.timestamp)}</div>
+          </div>
+          <div class="row">
+            <button class="btn small ${i.checked?"":"good"}" onclick="toggleShopping(${i.id})">${i.checked?"↺":"✓"}</button>
+            <button class="btn small bad" onclick="deleteShopping(${i.id})">🗑</button>
+          </div>
+        </div>
+      </div>
+    `).join("")}
+  `;
+}
+
+function renderAllowance(){
+  const tasks = state.data.choresTasks || [];
+  const workers = state.data.choresWorkers || [];
+  const weekly = state.data.weekly || [];
+
+  const available = tasks.filter(t=>t.status==="available");
+  const proposed = tasks.filter(t=>t.status==="proposed");
+  const myWork = workers.filter(w=>w.worker_name===state.user.name && !w.completed_at && !w.approved_at);
+  const completed = workers.filter(w=>w.completed_at && !w.approved_at && !w.rejected_at);
+
+  let html = "";
+
+  // Create task (parent)
+  if(isParent()){
+    html += `
+      <fieldset style="border:1px solid var(--border);border-radius:var(--r);padding:16px;margin-bottom:20px">
+        <legend style="font-weight:900">Opprett oppgave</legend>
+        <input id="cTitle" class="inp" placeholder="Tittel" style="margin-bottom:10px" />
+        <div class="row" style="margin-bottom:10px">
+          <input id="cAmount" type="number" class="inp" placeholder="Beløp kr" />
+          <select id="cCat" class="inp">
+            <option value="hjemme">🏠 Hjemme</option>
+            <option value="ute">🌳 Ute</option>
+            <option value="kjaeledyr">🐾 Kjæledyr</option>
+            <option value="skole">📚 Skole</option>
+          </select>
+          <select id="cType" class="inp">
+            <option value="once">Engangs</option>
+            <option value="weekly">Ukentlig</option>
+          </select>
+        </div>
+        <button class="btn good" onclick="doCreateTask()">Opprett</button>
+      </fieldset>
+    `;
+  }
+
+  // Propose task (child)
+  if(isChild()){
+    html += `
+      <fieldset style="border:1px solid var(--border);border-radius:var(--r);padding:16px;margin-bottom:20px">
+        <legend style="font-weight:900">💡 Foreslå oppgave</legend>
+        <input id="pTitle" class="inp" placeholder="Hva vil du gjøre?" style="margin-bottom:10px" />
+        <div class="row" style="margin-bottom:10px">
+          <input id="pAmount" type="number" class="inp" placeholder="Beløp kr" />
+          <select id="pCat" class="inp">
+            <option value="hjemme">🏠 Hjemme</option>
+            <option value="ute">🌳 Ute</option>
+            <option value="kjaeledyr">🐾 Kjæledyr</option>
+            <option value="skole">📚 Skole</option>
+          </select>
+        </div>
+        <button class="btn good" onclick="doProposeTask()">Send forslag</button>
+      </fieldset>
+    `;
+  }
+
+  // Proposals (parent view)
+  if(isParent() && proposed.length>0){
+    html += `<h3 style="margin-top:20px">💡 Forslag fra barn</h3>`;
+    proposed.forEach(t=>{
+      html += `
+        <div class="item">
+          <div class="itemTop">
+            <div style="flex:1">
+              <div class="itemTitle">${escapeHtml(t.title)} <span class="badge" style="border-color:var(--warn);color:var(--warn)">${t.amount} kr</span></div>
+              <div class="itemSub">Foreslått av ${escapeHtml(t.created_by)}</div>
+            </div>
+            <div class="row">
+              <button class="btn small good" onclick="approveProposal(${t.id})">✓ Godkjenn</button>
+              <button class="btn small bad" onclick="rejectProposal(${t.id})">✗ Avvis</button>
+            </div>
+          </div>
+        </div>
+      `;
+    });
+  }
+
+  // Available tasks
+  if(available.length>0){
+    html += `<h3 style="margin-top:20px">📋 Tilgjengelige oppgaver</h3>`;
+    available.forEach(t=>{
+      html += `
+        <div class="item">
+          <div class="itemTop">
+            <div style="flex:1">
+              <div class="itemTitle">${escapeHtml(t.title)} <span class="badge" style="border-color:var(--good);color:var(--good)">${t.amount} kr</span></div>
+              <div class="itemSub">${t.category} • ${t.task_type==="weekly"?"🔁 Ukentlig":"✅ Engangs"}</div>
+            </div>
+            ${isChild()?`<button class="btn small good" onclick="takeTask(${t.id})">Ta oppgave</button>`:""}
+          </div>
+        </div>
+      `;
+    });
+  }
+
+  // My work (child)
+  if(isChild() && myWork.length>0){
+    html += `<h3 style="margin-top:20px">⏳ Mine påbegynte oppgaver</h3>`;
+    myWork.forEach(w=>{
+      const task = tasks.find(t=>t.id===w.task_id);
+      if(!task) return;
+      html += `
+        <div class="item">
+          <div class="itemTop">
+            <div style="flex:1">
+              <div class="itemTitle">${escapeHtml(task.title)} <span class="badge" style="border-color:var(--warn);color:var(--warn)">${task.amount} kr</span></div>
+              <div class="itemSub">Tatt ${fmtShort(w.started_at)}</div>
+            </div>
+            <button class="btn small good" onclick="completeMyWork(${w.id})">✓ Ferdig</button>
+          </div>
+        </div>
+      `;
+    });
+  }
+
+  // Completed waiting approval (parent)
+  if(isParent() && completed.length>0){
+    html += `<h3 style="margin-top:20px">⏰ Venter på godkjenning</h3>`;
+    completed.forEach(w=>{
+      const task = tasks.find(t=>t.id===w.task_id);
+      if(!task) return;
+      html += `
+        <div class="item">
+          <div class="itemTop">
+            <div style="flex:1">
+              <div class="itemTitle">${escapeHtml(task.title)} <span class="badge" style="border-color:var(--good);color:var(--good)">${task.amount} kr</span></div>
+              <div class="itemSub">Fullført av ${escapeHtml(w.worker_name)} ${fmtShort(w.completed_at)}</div>
+            </div>
+            <div class="row">
+              <button class="btn small good" onclick="approveWork(${w.id})">✓ Godkjenn</button>
+              <button class="btn small bad" onclick="rejectWork(${w.id})">✗ Avvis</button>
+            </div>
+          </div>
+        </div>
+      `;
+    });
+  }
+
+  // Weekly earnings overview
+  if(weekly.length>0){
+    html += `<h3 style="margin-top:30px">📊 Ukeoversikt</h3>`;
+    const grouped = {};
+    weekly.forEach(r=>{
+      const k = weekKeyFromRow(r);
+      if(!grouped[k]) grouped[k] = [];
+      grouped[k].push(r);
+    });
+    const sorted = Object.keys(grouped).sort().reverse();
+    sorted.slice(0,4).forEach(k=>{
+      const rows = grouped[k];
+      html += `<div style="border:1px solid var(--border);border-radius:var(--r);padding:12px;margin-bottom:10px">
+        <div style="font-weight:900;margin-bottom:8px">Uke ${k}</div>
+        ${rows.map(r=>`<div style="display:flex;justify-content:space-between;font-size:14px;margin-bottom:4px">
+          <span>${escapeHtml(r.worker_name)}</span><span style="font-weight:900;color:var(--good)">${r.total_earned} kr</span>
+        </div>`).join("")}
+      </div>`;
+    });
+  }
+
+  return html;
 }
 
 /* ============================================================
-   SHOPPING UI
+   ACTIONS WRAPPED
    ============================================================ */
-function renderShopping(){
-  const items = state.data.shopping;
-  return `
-    <div class="panel">
-      <p class="title">🛒 Handleliste</p>
-      <div class="row">
-        <input class="field" id="shopText" placeholder="Hva skal kjøpes?" />
-        <input class="field" id="shopQty" type="number" min="1" value="1" style="max-width:120px" />
-        <button class="btn primary" onclick="uiAddShopping()">Legg til</button>
-      </div>
-
-      <div class="list">
-        ${items.length===0 ? `<div class="muted">Ingen varer enda.</div>` : items.map(i=>`
-          <div class="item">
-            <div class="itL">
-              <div class="itT">${i.checked ? "✅ " : ""}${escapeHtml(i.text)} <span class="muted">x${i.quantity||1}</span></div>
-              <div class="itM">
-                <span style="color:${escapeHtml(i.added_by_color)};font-weight:950">${escapeHtml(i.added_by)}</span>
-                • ${fmtShort(i.timestamp)}
-              </div>
-            </div>
-            <div class="itR">
-              <button class="btn small ${i.checked?"good":"primary"}" onclick='toggleShopping(${JSON.stringify(i)})'>${i.checked?"Ukjøpt":"Kjøpt"}</button>
-              <button class="btn small bad" onclick='deleteShopping(${JSON.stringify(i)})'>Slett</button>
-            </div>
-          </div>
-        `).join("")}
-      </div>
-    </div>
-  `;
-}
-function uiAddShopping(){
+function doAddShopping(){
   const text = document.getElementById("shopText").value;
   const qty = document.getElementById("shopQty").value;
-  addShopping(text, qty).catch(e=>toast("Kunne ikke legge til: " + e.message, "bad"));
+  addShopping(text, qty).catch(e=>toast("Kunne ikke legge til: "+e.message,"bad"));
   document.getElementById("shopText").value="";
   document.getElementById("shopQty").value="1";
 }
-
-/* ============================================================
-   ALLOWANCE UI (barn forslag + velg oppgaver + ukestatistikk)
-   ============================================================ */
-function renderAllowance(){
-  const user = state.user;
-  const tasks = state.data.choresTasks;
-  const workers = state.data.choresWorkers;
-  const weekly = state.data.weekly;
-
-  const proposed = tasks.filter(t => t.status==="proposed" && t.proposed_by_child===true);
-  const available = tasks.filter(t => t.status==="available");
-  const assigned = tasks.filter(t => t.status==="assigned");
-  const completedWorkers = workers.filter(w => w.completed_at && !w.approved_at && !w.rejected_at);
-  const myWorkers = workers.filter(w => w.worker_name===user.name && !w.rejected_at);
-  const myActive = myWorkers.filter(w => !w.completed_at && !w.approved_at);
-  const myDoneWaiting = myWorkers.filter(w => w.completed_at && !w.approved_at);
-
-  // Week picker
-  const weekKeys = Array.from(new Set(weekly.map(weekKeyFromRow)));
-  const currentKey = currentISOWeekKey();
-  let selectedKey = state.ui.weekKey;
-  if(selectedKey==="auto"){
-    selectedKey = weekKeys.includes(currentKey) ? currentKey : (weekKeys[0] || currentKey);
-  }
-  const selRows = weekly.filter(r => weekKeyFromRow(r)===selectedKey);
-  const children = USERS.filter(u=>u.role==="child");
-
-  return `
-    <div class="panel">
-      <div class="row" style="justify-content:space-between;align-items:flex-end">
-        <div>
-          <p class="title">💰 Ukelønn</p>
-          <div class="muted">Forslag → Godkjent forslag → Barn tar → Fullfører → Forelder godkjenner → Teller i uke-statistikk</div>
-        </div>
-        <div style="min-width:220px">
-          <div class="muted" style="margin-bottom:6px">Uke</div>
-          <select onchange="setWeek(this.value)">
-            <option value="auto" ${state.ui.weekKey==="auto"?"selected":""}>Auto (nå / siste)</option>
-            ${weekKeys.map(k=>`<option value="${k}" ${state.ui.weekKey===k?"selected":""}>${k}</option>`).join("")}
-          </select>
-        </div>
-      </div>
-
-      <div class="hr"></div>
-
-      <div class="grid3">
-        ${children.map(c=>{
-          const r = selRows.find(x=>x.worker_name===c.name);
-          const sum = r ? r.sum_earned : 0;
-          const cnt = r ? r.approved_tasks : 0;
-          return `
-            <div class="panel" style="background:rgba(255,255,255,.04)">
-              <div class="row" style="justify-content:space-between">
-                <div class="row" style="gap:10px">
-                  <div class="avatar" style="width:44px;height:44px;border-radius:14px;border-color:${c.color}55">${c.emoji}</div>
-                  <div>
-                    <div style="font-weight:950">${escapeHtml(c.name)}</div>
-                    <div class="muted" style="font-size:12px">${selectedKey}</div>
-                  </div>
-                </div>
-                <div class="chip" style="border-color:${c.color}55">${sum} kr</div>
-              </div>
-              <div class="kpi" style="margin-top:10px">
-                <span class="chip">Godkjent: ${cnt}</span>
-                <span class="chip">Sum: ${sum} kr</span>
-              </div>
-            </div>
-          `;
-        }).join("")}
-      </div>
-
-      <div class="hr"></div>
-
-      ${isChild() ? renderAllowanceChild({available, myActive, myDoneWaiting}) : ""}
-      ${isParent() ? renderAllowanceParent({proposed, available, assigned, completedWorkers, tasks, workers}) : ""}
-    </div>
-  `;
+function toggleShopping(id){
+  const item = state.data.shopping.find(i=>i.id===id);
+  if(item) toggleShopping(item).catch(e=>toast("Feil: "+e.message,"bad"));
+}
+function deleteShopping(id){
+  const item = state.data.shopping.find(i=>i.id===id);
+  if(item) deleteShopping(item).catch(e=>toast("Feil: "+e.message,"bad"));
+}
+function takeTask(id){
+  const task = state.data.choresTasks.find(t=>t.id===id);
+  if(task) takeTask(task).catch(e=>toast("Feil: "+e.message,"bad"));
+}
+function completeMyWork(id){
+  const worker = state.data.choresWorkers.find(w=>w.id===id);
+  if(worker) completeMyWork(worker).catch(e=>toast("Feil: "+e.message,"bad"));
+}
+function approveWork(id){
+  const worker = state.data.choresWorkers.find(w=>w.id===id);
+  if(worker) approveWork(worker).catch(e=>toast("Feil: "+e.message,"bad"));
+}
+function rejectWork(id){
+  const worker = state.data.choresWorkers.find(w=>w.id===id);
+  if(worker) rejectWork(worker).catch(e=>toast("Feil: "+e.message,"bad"));
+}
+function approveProposal(id){
+  const task = state.data.choresTasks.find(t=>t.id===id);
+  if(task) approveProposal(task).catch(e=>toast("Feil: "+e.message,"bad"));
+}
+function rejectProposal(id){
+  const task = state.data.choresTasks.find(t=>t.id===id);
+  if(task) rejectProposal(task).catch(e=>toast("Feil: "+e.message,"bad"));
 }
 
-function renderAllowanceChild({available, myActive, myDoneWaiting}){
-  return `
-    <div class="grid2">
-      <div class="panel">
-        <p class="title">✅ Tilgjengelige oppgaver</p>
-        <div class="muted">Velg blant familieoppgaver (inkl. godkjente forslag)</div>
-
-        <div class="list">
-          ${available.length===0 ? `<div class="muted">Ingen tilgjengelige oppgaver akkurat nå.</div>` : available.slice(0,50).map(t=>`
-            <div class="item" style="border-left:6px solid ${escapeHtml(t.created_by_color)}">
-              <div class="itL">
-                <div class="itT">${escapeHtml(t.title)} <span class="muted">(${t.amount} kr)</span></div>
-                <div class="itM">Laget av <span style="color:${escapeHtml(t.created_by_color)};font-weight:950">${escapeHtml(t.created_by)}</span> • ${escapeHtml(t.category || "hjemme")}</div>
-              </div>
-              <div class="itR">
-                <button class="btn small primary" onclick='takeTask(${JSON.stringify(t)}).catch(e=>toast("Kunne ikke ta oppgave: "+e.message,"bad"))'>Ta</button>
-              </div>
-            </div>
-          `).join("")}
-        </div>
-      </div>
-
-      <div class="panel">
-        <p class="title">🧠 Foreslå oppgave</p>
-        <div class="muted">Barna kan foreslå – foreldre godkjenner før den blir tilgjengelig.</div>
-        <div class="hr"></div>
-        <div class="row">
-          <input class="field" id="pTitle" placeholder="Oppgavetittel (f.eks. Rydde rommet)" />
-          <input class="field" id="pAmount" type="number" min="0" placeholder="Beløp (kr)" style="max-width:160px" />
-          <select id="pCat" style="max-width:220px">
-            <option value="hjemme">Hjemme</option>
-            <option value="ute">Ute</option>
-            <option value="annet">Annet</option>
-          </select>
-          <button class="btn primary" onclick="uiProposeTask()">Send forslag</button>
-        </div>
-
-        <div class="hr"></div>
-
-        <p class="title">⏳ Mine oppgaver</p>
-        <div class="list">
-          ${myActive.length===0 ? `<div class="muted">Ingen aktive oppgaver.</div>` : myActive.map(w=>`
-            <div class="item">
-              <div class="itL">
-                <div class="itT">Oppgave #${w.task_id}</div>
-                <div class="itM">Startet: ${fmtShort(w.started_at)}</div>
-              </div>
-              <div class="itR">
-                <button class="btn small warn" onclick='completeMyWork(${JSON.stringify(w)}).catch(e=>toast("Kunne ikke fullføre: "+e.message,"bad"))'>Fullført</button>
-              </div>
-            </div>
-          `).join("")}
-
-          ${myDoneWaiting.length===0 ? `` : `
-            <div class="muted">Venter på godkjenning:</div>
-            ${myDoneWaiting.map(w=>`
-              <div class="item">
-                <div class="itL">
-                  <div class="itT">Oppgave #${w.task_id}</div>
-                  <div class="itM">Fullført: ${fmtShort(w.completed_at)}</div>
-                </div>
-                <div class="itR"><span class="chip">Venter</span></div>
-              </div>
-            `).join("")}
-          `}
-        </div>
-      </div>
-    </div>
-  `;
-}
-function uiProposeTask(){
+function doProposeTask(){
   const title = document.getElementById("pTitle").value;
   const amount = document.getElementById("pAmount").value;
   const category = document.getElementById("pCat").value;
@@ -711,89 +782,7 @@ function uiProposeTask(){
   document.getElementById("pAmount").value="";
 }
 
-function renderAllowanceParent({proposed, available, assigned, completedWorkers, tasks, workers}){
-  return `
-    <div class="grid2">
-      <div class="panel">
-        <p class="title">🧾 Forslag fra barn</p>
-        <div class="muted">Oppgaver med status <code>proposed</code></div>
-
-        <div class="list">
-          ${proposed.length===0 ? `<div class="muted">Ingen forslag akkurat nå.</div>` : proposed.map(t=>`
-            <div class="item" style="border-left:6px solid ${escapeHtml(t.created_by_color)}">
-              <div class="itL">
-                <div class="itT">${escapeHtml(t.title)} <span class="muted">(${t.amount} kr)</span></div>
-                <div class="itM">Foreslått av <span style="color:${escapeHtml(t.created_by_color)};font-weight:950">${escapeHtml(t.created_by)}</span></div>
-              </div>
-              <div class="itR">
-                <button class="btn small good" onclick='approveProposal(${JSON.stringify(t)}).catch(e=>toast("Kunne ikke godkjenne: "+e.message,"bad"))'>Godkjenn</button>
-                <button class="btn small bad" onclick='rejectProposal(${JSON.stringify(t)}).catch(e=>toast("Kunne ikke avvise: "+e.message,"bad"))'>Avvis</button>
-              </div>
-            </div>
-          `).join("")}
-        </div>
-
-        <div class="hr"></div>
-
-        <p class="title">✅ Opprett familieoppgave</p>
-        <div class="row">
-          <input class="field" id="cTitle" placeholder="Oppgavetittel" />
-          <input class="field" id="cAmount" type="number" min="0" placeholder="Beløp (kr)" style="max-width:160px" />
-          <select id="cCat" style="max-width:220px">
-            <option value="hjemme">Hjemme</option>
-            <option value="ute">Ute</option>
-            <option value="annet">Annet</option>
-          </select>
-          <select id="cType" style="max-width:220px">
-            <option value="once">Engang</option>
-            <option value="weekly">Ukentlig</option>
-          </select>
-          <button class="btn primary" onclick="uiCreateFamilyTask()">Opprett</button>
-        </div>
-      </div>
-
-      <div class="panel">
-        <p class="title">⏳ Venter godkjenning (utført)</p>
-        <div class="muted">Workers med <code>completed_at</code> og uten <code>approved_at</code></div>
-
-        <div class="list">
-          ${completedWorkers.length===0 ? `<div class="muted">Ingen som venter på godkjenning nå.</div>` : completedWorkers.map(w=>{
-            const t = tasks.find(x=>x.id===w.task_id);
-            const amount = t ? t.amount : 0;
-            return `
-              <div class="item">
-                <div class="itL">
-                  <div class="itT">${t ? escapeHtml(t.title) : `Oppgave #${w.task_id}`} <span class="muted">(${amount} kr)</span></div>
-                  <div class="itM">Barn: <span style="color:${escapeHtml(w.worker_color)};font-weight:950">${escapeHtml(w.worker_name)}</span> • Fullført: ${fmtShort(w.completed_at)}</div>
-                </div>
-                <div class="itR">
-                  <button class="btn small good" onclick='approveWork(${JSON.stringify(w)}).catch(e=>toast("Kunne ikke godkjenne: "+e.message,"bad"))'>Godkjenn</button>
-                  <button class="btn small bad" onclick='rejectWork(${JSON.stringify(w)}).catch(e=>toast("Kunne ikke avvise: "+e.message,"bad"))'>Avvis</button>
-                </div>
-              </div>
-            `;
-          }).join("")}
-        </div>
-
-        <div class="hr"></div>
-
-        <p class="title">📌 Tilgjengelige oppgaver</p>
-        <div class="list">
-          ${available.length===0 ? `<div class="muted">Ingen tilgjengelige oppgaver.</div>` : available.slice(0,20).map(t=>`
-            <div class="item" style="border-left:6px solid ${escapeHtml(t.created_by_color)}">
-              <div class="itL">
-                <div class="itT">${escapeHtml(t.title)} <span class="muted">(${t.amount} kr)</span></div>
-                <div class="itM">Laget av ${escapeHtml(t.created_by)} • ${escapeHtml(t.category||"hjemme")}</div>
-              </div>
-              <div class="itR"><span class="chip">Tilgjengelig</span></div>
-            </div>
-          `).join("")}
-        </div>
-      </div>
-    </div>
-  `;
-}
-function uiCreateFamilyTask(){
+function doCreateTask(){
   const title = document.getElementById("cTitle").value;
   const amount = document.getElementById("cAmount").value;
   const category = document.getElementById("cCat").value;
@@ -846,6 +835,7 @@ async function refresh(full=true){
       state.data.weekly = weekly || [];
     }
   }catch(e){
+    console.error("Refresh error:", e);
     toast(e.message || "Noe gikk galt", "bad");
   }finally{
     state.loading = false;
